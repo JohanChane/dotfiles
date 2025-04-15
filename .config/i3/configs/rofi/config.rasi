@@ -1,0 +1,17 @@
+configuration {
+  timeout {
+      action: "kb-cancel";
+      delay:  0;
+  }
+  filebrowser {
+      directories-first: true;
+      sorting-method:    "name";
+  }
+
+  // --- Customize ---
+  drun-display-format: "{name}: [<span weight='light' size='small'><i>{exec}</i></span>]";
+  show-icons: true;
+}
+
+//@theme "gruvbox-light"
+//@theme "Adapta-Nokto.rasi"
