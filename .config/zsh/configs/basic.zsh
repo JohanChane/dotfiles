@@ -1,4 +1,9 @@
-# # Basic Config
+# Basic Config
+
+# ## locale
+export LANG=en_US.UTF-8
+export LANGUAGE=en_US
+
 # ## Basic settings
 alias rm='rm -i'
 alias cp='cp -i'

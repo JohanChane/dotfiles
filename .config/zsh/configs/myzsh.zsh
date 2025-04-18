@@ -12,9 +12,6 @@ autoload -Uz compinit
 compinit
 # End of lines added by compinstall
 
-# # completion
-compdef _gnu_generic fzf      # fzf 命令使用补全
-
 # ## 设置 zsh 的快捷键
 bindkey  '^[[H' beginning-of-line     # Home
 bindkey  '^[[F' end-of-line           # End

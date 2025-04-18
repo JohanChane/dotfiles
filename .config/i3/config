@@ -61,6 +61,8 @@ include keybinding.conf
 bar {
   #status_command i3status
   status_command sleep 1; env SCRIPT_DIR=/usr/lib/i3blocks i3blocks -c /home/johan/.config/i3/configs/i3blocks/config
+  #status_command sleep 1; env SCRIPT_DIR=/usr/lib/i3blocks i3blocks -c /home/johan/.config/i3/configs/i3blocks/config 2>/tmp/i3blocks.err | tee /tmp/i3block.out
+  #status_command sleep 1; env SCRIPT_DIR=/home/johan/My/Workspace/Src/TmpProjects/i3blocks-contrib i3blocks -c /home/johan/.config/i3/configs/i3blocks/config
 }
 
 include /etc/sway/config.d/*
