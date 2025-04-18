@@ -1,59 +1,17 @@
 return {
-  {
-    "JohanChane/wsnavigator.nvim",
-    config = function()
-      require("wsnavigator").setup({
-        ui = {
-          float = {
-            border = "single", -- see ':h nvim_open_win'
-            float_hl = "Normal", -- see ':h winhl'
-            border_hl = "Normal",
-            blend = 0, -- see ':h winblend'
-            height = 0.9, -- Num from 0 - 1 for measurements
-            width = 0.9,
-            x = 0.5, -- X and Y Axis of Window
-            y = 0.4,
-          },
-        },
-        max_len_of_entries = 20, -- max length of entries.
-        display_mode = "filetree", -- filetree | list
-        jumplist = {
-          buf_only = false, -- show buf_only
-        },
-        filetree = {
-          --theme = { -- user your theme
-          --  indent = '  ',
-          --  branch = '│ ',
-          --  last_child = '└─',
-          --  mid_child = '├─',
-          --},
-          theme_name = "classic", -- 'classic' | 'fine' | 'bold' | 'dotted'
-          -- | 'minimal' | 'double' | 'arrows' | 'simple' | 'tree' | 'compact_tree'
-        },
-        --keymaps = {       -- keymaps for wsnavigator buffer. `:h :map`
-        --  quit = { 'q', '<Esc>' },
-        --  switch_display_mode = { 'ts' }
-        --},
-        theme = {
-          --entry_hls = {     -- Ref `default_entry_hls`
-          --  WsnKey = { fg = '#ff0000' },
-          --}
-        },
-      })
+	{
+		"JohanChane/wsnavigator.nvim",
+		config = function()
+			require("wsnavigator").setup({
+				max_len_of_buffers = 7, -- Do not set this value above `20`, (recommended: `7`).
+				cb_for_too_many_buffers = function() -- Callback function when buffer count exceeds `max_len_of_buffers`
+					require("fzf-lua").buffers() -- Use `fzf-lua` for buffer switching when too many buffers are open. Please config your buffer switcher.
+				end,
+			})
 
-      -- use buf_only
-      vim.keymap.set("n", "tt", function()
-        local wsn = require("wsnavigator")
-        wsn.set_opts({ jumplist = { buf_only = true } })
-        wsn.open_wsn()
-      end, { noremap = true })
-
-      -- use jumplist
-      vim.keymap.set("n", "tj", function()
-        local wsn = require("wsnavigator")
-        wsn.set_opts({ jumplist = { buf_only = false } })
-        wsn.open_wsn()
-      end, { noremap = true })
-    end,
-  },
+			vim.keymap.set("n", "<LocalLeader>f", function()
+				require("wsnavigator").open_wsn()
+			end, { noremap = true })
+		end,
+	},
 }
