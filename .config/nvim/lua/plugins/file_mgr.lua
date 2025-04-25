@@ -8,7 +8,7 @@ return {
           -- The command is `yazi --chooser-file <choose_file> '<entry>'`
           -- `_choose_file` is internally used by fm.nvim (the name is fixed, not customizable)
           yazi = {
-            create_win_cmd_format = "yazi --chooser-file %{_choose_file} '%{entry}'",
+            create_win_cmd_format = 'yazi --chooser-file %{_choose_file} "%{entry}"',
             suffix = "o",
           },
         },
