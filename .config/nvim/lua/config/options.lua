@@ -3,3 +3,15 @@
 -- Add any additional options here
 
 vim.g.maplocalleader = ";"
+vim.opt.clipboard = ""
+
+-- ========== 常用命令 ==========
+-- 删除行尾空格命令
+vim.api.nvim_create_user_command("StripRightSpace", function()
+  vim.cmd("%s/\\s\\+$//e")
+end, {})
+
+-- 切换文件换行符格式（DOS/UNIX）
+vim.api.nvim_create_user_command("EidtWithDosFF", function()
+  vim.cmd("e ++ff=dos")
+end, {})
