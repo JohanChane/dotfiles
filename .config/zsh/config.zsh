@@ -12,6 +12,7 @@ source ~/.config/zsh/configs/pyenv.zsh
 
 source ~/.config/zsh/configs/utils_sys.zsh
 source ~/.config/zsh/configs/utils.zsh
-source ~/.config/zsh/configs/others.zsh
+
+source ~/.config/zsh/configs/temp.zsh
 
 #zprof

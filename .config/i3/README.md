@@ -2,7 +2,7 @@
 
 ```sh
 # ## xorg
-paru -S xorg
+paru -S xorg xorg-xrdb
 
 # ## Display manager
 paru -S ly
