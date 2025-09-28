@@ -1,6 +1,0 @@
-! 字体渲染基础设置
-Xft.dpi: 96                   ! 使用默认值 96
-Xft.antialias: true           ! 启用抗锯齿
-Xft.hinting: true             ! 启用微调
-Xft.rgba: rgb                 ! 次像素渲染RGB顺序
-Xft.lcdfilter: lcddefault     ! LCD过滤，增强平滑效果
