@@ -19,7 +19,7 @@ paru -S xdg-desktop-portal xdg-desktop-portal-gtk xdg-desktop-portal-gnome
 # ## polkit
 paru -S polkit-gnome
 
-# ## dunst
+# ## rofi, dunst
 paru -S papirus-icon-theme
 
 # ## lock

@@ -1,0 +1,8 @@
+#!/bin/sh
+
+main() {
+  env -u ELECTRON_OZONE_PLATFORM_HINT GDK_BACKEND=x11 QT_QPA_PLATFORM=xcb "$@" &
+  disown
+}
+
+main "$@"

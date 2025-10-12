@@ -13,6 +13,8 @@ source ~/.config/zsh/configs/asdf.zsh
 source ~/.config/zsh/configs/utils_sys.zsh
 source ~/.config/zsh/configs/utils.zsh
 
+source ~/.config/zsh/configs/wayland.zsh
+
 source ~/.config/zsh/configs/temp.zsh
 
 #zprof

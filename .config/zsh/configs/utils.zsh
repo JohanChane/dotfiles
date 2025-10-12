@@ -1,5 +1,5 @@
 # ## desktop entry exec
-function lsappexec {
+function ls-app-exec {
   command grep --color -ir "\<Exec=" ~/.local/share/applications /usr/share/applications \
     | fzf -d':' --ansi \
         --preview "echo {2}" \

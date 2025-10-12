@@ -1,0 +1,89 @@
+environment {
+    XMODIFIERS "@im=fcitx"
+    // kitty
+    GLFW_IM_MODULE "ibus"
+    // qt
+    QT_QPA_PLATFORM "wayland"
+    // electron
+    ELECTRON_OZONE_PLATFORM_HINT "auto"
+}
+
+input {
+    keyboard {
+        xkb {
+        }
+        numlock
+    }
+
+    touchpad {
+        off
+    }
+
+    mouse {
+    }
+}
+
+/-output "eDP-1" {
+    mode "2560x1440@120.030"
+    scale 1
+    transform "normal"
+    position x=0 y=0
+}
+
+layout {
+    gaps 16
+
+    center-focused-column "never"
+
+    preset-column-widths {
+        proportion 0.33333
+        proportion 0.5
+        proportion 0.66667
+    }
+
+    default-column-width { proportion 0.5; }
+    focus-ring {
+        width 4
+        active-color "#7fc8ff"
+        inactive-color "#505050"
+    }
+
+    border {
+        off
+    }
+
+    shadow {
+    }
+
+    struts {
+        // left 64
+        // right 64
+        // top 64
+        // bottom 64
+    }
+}
+
+hotkey-overlay {
+    skip-at-startup
+}
+
+config-notification {
+    disable-failed
+}
+
+screenshot-path "~/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
+
+animations {
+}
+
+// ## window-rule
+include "window-rule.kdl"
+// ## startup
+include "startup.kdl"
+
+// ## binds
+include "binds.kdl"
+
+// ## dms
+include "dms_binds.kdl"
+include "dms/layout.kdl"

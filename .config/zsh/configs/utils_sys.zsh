@@ -1,13 +1,16 @@
-alias lsmipkgs='command lsmipkgs|less'
+if ! command -v "lsmipkgs" &>/dev/null; then
+  sudo ln -sf ~/.config/zsh/utils/lsmipkgs /usr/local/bin/
+  hash -r
+fi
 
 # ## default apps
-show_default_apps() {
+default-app-show() {
   echo -n 'text/plain: ' && xdg-mime query default text/plain
   echo -n 'inode/directory: ' && xdg-mime query default inode/directory
   echo -n 'browser: ' && xdg-settings get default-web-browser
 }
 
-set_default_app() {
+default-app-set() {
   type="$1"
   app="$2"
 
@@ -19,4 +22,4 @@ set_default_app() {
   xdg-mime default "$app" "$type"
 }
 
-alias my_reflector='sudo reflector --country China --protocol https --latest 5 --sort rate --save /etc/pacman.d/mirrorlist'
+alias reflector-my='sudo reflector --country China --protocol https --latest 5 --sort rate --save /etc/pacman.d/mirrorlist'
