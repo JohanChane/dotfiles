@@ -1,0 +1,165 @@
+{
+  "niri/workspaces": {
+    "disable-click": true,
+    "format": "{icon}",
+    "format-icons": {
+      "active": " ",
+      "default": " ",
+    },
+  },
+  "niri/window": {
+    //"icon-size": 16,
+    "icon": true,
+    "max-length": 70,
+  },
+  "tray": {
+    "spacing": 10
+  },
+  "custom/music": {
+    "format": "<span font='icon'></span>  {}",
+    "escape": true,
+    "interval": 5,
+    "tooltip": false,
+    "exec": "playerctl metadata --format='{{ title }}'",
+    "on-click": "playerctl play-pause",
+    "max-length": 50,
+    "icon-size": 16,
+  },
+  "clock": {
+    "timezone": "Asia/Shanghai",
+    "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
+    "format-alt": " {:%d/%m/%Y}",
+    "format": " {:%H:%M %a %d}"
+  },
+  "backlight": {
+    "device": "intel_backlight",
+    "format": "{icon}",
+    "format-icons": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+  },
+  "custom/display-brightness": {
+    "exec": "~/.config/waybar/modules/display-brightness.sh",
+    //"interval": 5,
+    //"signal": 100,
+    "format": "󰌶 {}",
+    "return-type": "json"
+  },
+  "battery": {
+    "states": {
+      "warning": 30,
+      "critical": 15
+    },
+    "format": "{icon}",
+    "format-charging": "",
+    "format-plugged": "",
+    "format-alt": "{icon}",
+    "format-icons": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+  },
+  "pulseaudio": {
+    // "scroll-step": 1, // %, can be a float
+    "format": "{icon} {volume}%",
+    "format-muted": "",
+    "format-icons": {
+      "default": [
+        "",
+        "",
+        " "
+      ]
+    },
+    "on-click": "pavucontrol"
+  },
+  "pulseaudio#microphone": {
+    "format": "{format_source}",
+    "format-source": "",
+    "format-source-muted": "",
+    "on-click": "pactl set-source-mute @DEFAULT_SOURCE@ toggle",
+    "tooltip": false
+  },
+  "custom/lock": {
+    "tooltip": false,
+    "on-click": "sh -c '(sleep 0.5s; swaylock)' & disown",
+    "format": "",
+  },
+  "custom/powermenu": {
+    "format": "",
+    "on-click": "$HOME/.config/waybar/modules/powermenu.sh",
+    "tooltip": false
+  },
+  "network": {
+    "format": "{ifname}",
+    "format-wifi": "  {essid}",
+    "format-ethernet": "󰈀  {ifname}",
+    "format-disconnected": "Disconnected",
+    "tooltip-format-wifi": "  {ifname} @ {essid}\nIP: {ipaddr}\nStrength: {signalStrength}%\nFreq: {frequency}MHz\nUp: {bandwidthUpBits} Down: {bandwidthDownBits}",
+    "tooltip-format-ethernet": "󰈀  {ifname}\nIP: {ipaddr}\n up: {bandwidthUpBits} down: {bandwidthDownBits}",
+    "tooltip-format-disconnected": "Disconnected",
+    "max-length": 50,
+    "on-click": "",
+  },
+  "cpu": {
+    "format": " {usage}%",
+    "interval": 10,
+  },
+  "memory": {
+    "format": "<span font='icon'></span> {}%",
+    "interval": 10,
+  },
+  "custom/notification": {
+    "tooltip": false,
+    "format": "{icon}",
+    "format-icons": {
+      "notification": "<span foreground='red'><sup></sup></span>",
+      "none": "",
+      "dnd-notification": "<span foreground='red'><sup></sup></span>",
+      "dnd-none": "",
+      "inhibited-notification": "<span foreground='red'><sup></sup></span>",
+      "inhibited-none": "",
+      "dnd-inhibited-notification": "<span foreground='red'><sup></sup></span>",
+      "dnd-inhibited-none": ""
+    },
+    "return-type": "json",
+    "exec-if": "which swaync-client",
+    "exec": "swaync-client -swb",
+    "on-click": "swaync-client -t -sw",
+    "on-click-right": "swaync-client -d -sw",
+    "escape": true
+  },
+  "custom/updates": {
+    "format": "  {}",
+    "escape": true,
+    "return-type": "json",
+    "exec": "$HOME/.config/waybar/modules/count-updates.sh",
+    "restart-interval": 60,
+    "on-click": ""
+  },
+  "custom/orphaned-pkgs": {
+    "format": "󰇖 {}",
+    "escape": true,
+    "return-type": "json",
+    "exec": "$HOME/.config/waybar/modules/count-orphans.sh",
+    "restart-interval": 60,
+    "tooltip": true
+  },
+}

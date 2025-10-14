@@ -15,7 +15,7 @@ ls-wayland-windows() {
 }
 
 if ! command -v "spawn-with-xwayland" &>/dev/null; then
-  sudo ln -sf ~/.config/zsh/utils/spawn-with-xwayland /usr/local/bin/
+  ln -sf ~/.config/zsh/utils/spawn-with-xwayland ~/.local/bin/
   hash -r
 fi
 

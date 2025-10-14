@@ -1,7 +1,8 @@
 if ! command -v "lsmipkgs" &>/dev/null; then
-  sudo ln -sf ~/.config/zsh/utils/lsmipkgs /usr/local/bin/
+  ln -sf ~/.config/zsh/utils/lsmipkgs ~/.local/bin/
   hash -r
 fi
+alias lsmipkgs='lsmipkgs|less'
 
 # ## default apps
 default-app-show() {

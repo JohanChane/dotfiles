@@ -1,9 +1,9 @@
 ## Installation
 
 ```sh
-paru -S niri-git gammastep brightnessctl xwayland-satellite
-paru -S swayidle
-paru -S quickshell-git dms-shell-niri gammastep
+paru -S niri-git brightnessctl xwayland-satellite
+paru -S waybar swayidle swaync
+paru -S swaylock-effects swaybg
 
 # ## portal
 paru -S xdg-desktop-portal xdg-desktop-portal-gtk xdg-desktop-portal-gnome
@@ -19,6 +19,7 @@ paru -S rofi
 
 ```sh
 systemctl enable xwayland-satellite.service --user
+systemctl enable swaync --user
 ```
 
 ## flameshot

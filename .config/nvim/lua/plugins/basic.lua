@@ -1,3 +1,7 @@
 return {
-  { "lambdalisue/vim-suda" }
+  { "lambdalisue/vim-suda" },
+  {
+    "mzlogin/vim-markdown-toc",
+    ft = "markdown",
+  },
 }

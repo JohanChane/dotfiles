@@ -1,7 +1,8 @@
+spawn-at-startup "waybar"
 //spawn-at-startup "bash" "-c" "wl-paste --watch cliphist store &"
-spawn-at-startup "dms" "run"
 spawn-sh-at-startup "/usr/lib/xdg-desktop-portal -r"
 spawn-sh-at-startup "/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1"
 spawn-sh-at-startup "$HOME/.config/niri/scripts/idle.sh"
+spawn-sh-at-startup "$HOME/.config/niri/scripts/cron.sh"
 
 spawn-sh-at-startup "env GOLDENDICT_FORCE_WAYLAND=1 goldendict"

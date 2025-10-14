@@ -23,7 +23,7 @@ input {
     }
 }
 
-/-output "eDP-1" {
+output "eDP-1" {
     mode "2560x1440@120.030"
     scale 1
     transform "normal"
@@ -31,9 +31,10 @@ input {
 }
 
 layout {
-    gaps 16
+    gaps 4
 
     center-focused-column "never"
+    empty-workspace-above-first
 
     preset-column-widths {
         proportion 0.33333
@@ -43,7 +44,7 @@ layout {
 
     default-column-width { proportion 0.5; }
     focus-ring {
-        width 4
+        width 2
         active-color "#7fc8ff"
         inactive-color "#505050"
     }
@@ -67,23 +68,14 @@ hotkey-overlay {
     skip-at-startup
 }
 
-config-notification {
-    disable-failed
-}
-
 screenshot-path "~/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
 
 animations {
 }
 
-// ## window-rule
-include "window-rule.kdl"
+// ## layer-window-rule
+include "layer-window-rule.kdl"
 // ## startup
 include "startup.kdl"
-
 // ## binds
 include "binds.kdl"
-
-// ## dms
-include "dms_binds.kdl"
-include "dms/layout.kdl"

@@ -1,0 +1,58 @@
+layer-rule {
+    match namespace="waybar"
+    match at-startup=true
+
+    // Properties that apply continuously.
+    // https://github.com/YaLTeR/niri/wiki/Application-Issues#waybar-and-other-gtk-3-components
+    opacity 0.99
+    block-out-from "screencast"
+    // block-out-from "screen-capture"
+
+    shadow {
+        //on
+        off
+        softness 40
+        spread 5
+        offset x=0 y=5
+        draw-behind-window true
+        color "#00000064"
+        // inactive-color "#00000064"
+    }
+
+    geometry-corner-radius 12
+    place-within-backdrop false
+}
+
+window-rule {
+    match app-id=r#"^org\.wezfurlong\.wezterm$"#
+    default-column-width {}
+}
+
+window-rule {
+    match app-id=r#"firefox$"# title="^Picture-in-Picture$"
+    open-floating true
+}
+
+window-rule {
+    match app-id=r#"^io\.github\.xiaoyifang\.goldendict_ng$"#
+    open-floating true
+}
+
+window-rule {
+    match app-id=r#"flameshot$"# title="^flameshot-pin$"
+    open-floating true
+}
+
+window-rule {
+    match app-id=r#"^org\.keepassxc\.KeePassXC$"#
+    match app-id=r#"^org\.gnome\.World\.Secrets$"#
+
+    block-out-from "screen-capture"
+}
+
+window-rule {
+    geometry-corner-radius 12
+    clip-to-geometry true
+    //tiled-state true
+    //draw-border-with-background false
+}
