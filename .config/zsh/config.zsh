@@ -17,4 +17,6 @@ source ~/.config/zsh/configs/wayland.zsh
 
 source ~/.config/zsh/configs/temp.zsh
 
+export -U PATH
+
 #zprof
