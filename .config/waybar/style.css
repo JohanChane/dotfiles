@@ -139,3 +139,26 @@ tooltip label {
 #battery.warning:not(.charging) {
   color: @red;
 }
+
+#tray menu * {
+  color: @text;
+}
+
+#tray menu {
+  background-color: @base;
+  padding: 1rem;
+  margin: 1rem;
+  border: 2px solid @sky;
+  border-radius: 1rem;
+}
+
+#tray menu menuitem {
+  padding-left: 3px;
+  padding-right: 3px;
+  border-radius: 3rem;
+}
+
+#tray menu menuitem:hover {
+  background-color: @sky;
+  color: @text;
+}
