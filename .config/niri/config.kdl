@@ -35,6 +35,7 @@ layout {
 
     center-focused-column "never"
     empty-workspace-above-first
+    always-center-single-column
 
     preset-column-widths {
         proportion 0.33333

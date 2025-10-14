@@ -9,10 +9,14 @@ configuration {
   }
 
   // --- Customize ---
+  font: "mono 12";
   drun-display-format: "{name}: [<span weight='light' size='small'><i>{exec}</i></span>]";
   show-icons: true;
   icon-theme: "Papirus";
 }
 
 //@theme "gruvbox-light"
+//@theme "gruvbox-light-hard.rasi"
 //@theme "Adapta-Nokto.rasi"
+//@theme "paper-float.rasi"
+//@theme "glue_pro_blue.rasi"
