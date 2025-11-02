@@ -7,8 +7,8 @@ binds {
     Super+Alt+L hotkey-overlay-title="Lock the Screen: swaylock" { spawn-sh "$HOME/.config/niri/scripts/lock"; }
 
     Super+Alt+W hotkey-overlay-title=null { spawn-sh "firefox"; }
-    Super+Alt+T hotkey-overlay-title=null { spawn-sh "$HOME/.config/niri/scripts/goldendict.sh -p"; }
-    Super+Alt+Y hotkey-overlay-title=null { spawn-sh "$HOME/.config/niri/scripts/goldendict.sh"; }
+    Super+Alt+T hotkey-overlay-title=null { spawn-sh "$HOME/.config/niri/scripts/goldendict -p"; }
+    Super+Alt+Y hotkey-overlay-title=null { spawn-sh "$HOME/.config/niri/scripts/goldendict"; }
     Super+Alt+S hotkey-overlay-title=null { spawn-sh "flameshot gui"; }
 
     // ## audio

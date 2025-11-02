@@ -7,9 +7,12 @@ paru -S swayidle swaync
 paru -S swaylock-effects swaybg
 
 # ## portal
-paru -S xdg-desktop-portal xdg-desktop-portal-gtk xdg-desktop-portal-gnome
+paru -S xdg-desktop-portal
+paru -S xdg-desktop-portal-gtk xdg-desktop-portal-gnome xdg-desktop-portal-wlr
 # ## polkit
 paru -S polkit-gnome
+# ## Secret portal
+paru -S gnome-keyring
 
 paru -S wl-clipboard
 ```
@@ -21,6 +24,7 @@ paru -S rofi
 ```sh
 systemctl enable xwayland-satellite.service --user
 systemctl enable swaync --user
+systemctl enable --user gnome-keyring-daemon.service
 ```
 
 ## flameshot

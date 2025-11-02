@@ -2,7 +2,7 @@
 
 script_dir=$HOME/.config/niri/scripts
 
-lock=$script_dir/lock.sh
+lock=$script_dir/lock
 
 pkill swayidle
 swayidle -w \
