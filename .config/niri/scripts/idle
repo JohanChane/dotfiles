@@ -8,5 +8,7 @@ pkill swayidle
 swayidle -w \
   timeout 600 $lock \
   timeout 720 'niri msg action power-off-monitors' \
+  resume 'niri msg action power-on-monitors' \
   timeout 1800 'systemctl suspend' \
+  resume 'niri msg action power-on-monitors' \
   before-sleep $lock

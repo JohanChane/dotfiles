@@ -1,12 +1,18 @@
 {
-  "niri/workspaces": {
+  "sway/workspaces": {
     "disable-click": true,
-    "format": "{icon}",
-    "format-icons": {
-      "active": " ",
-      "default": " ",
-    },
+    "format": "{name}",
+    "format-icons": {},
+    "format-alt": "{name}"
   },
+  //"niri/workspaces": {
+  //  "disable-click": true,
+  //  "format": "{icon}",
+  //  "format-icons": {
+  //    "active": " ",
+  //    "default": " ",
+  //  },
+  //},
   "niri/window": {
     //"icon-size": 16,
     "icon": true,

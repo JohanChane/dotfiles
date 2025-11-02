@@ -1,0 +1,15 @@
+#!/bin/bash
+
+op=${1:-up}
+
+case $op in
+"up")
+  brightnessctl --class=$DEVICE_CLASS set +10%
+  ;;
+"down")
+  brightnessctl --class=$DEVICE_CLASS set 10%-
+  ;;
+*)
+  exit 1
+  ;;
+esac

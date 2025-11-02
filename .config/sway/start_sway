@@ -1,0 +1,16 @@
+#!/bin/sh
+
+# optional
+export XDG_CURRENT_DESKTOP=sway
+
+# ## 输入法
+export XMODIFIERS="@im=fcitx"
+# kitty
+export GLFW_IM_MODULE="ibus"
+# qt
+export QT_QPA_PLATFORM="wayland"
+# electron. See [ref](https://github.com/microsoft/vscode/issues/207033#issuecomment-2104720712)
+export ELECTRON_OZONE_PLATFORM_HINT="auto"
+
+exec env WLR_NO_HARDWARE_CURSORS=1 sway --unsupported-gpu
+#exec sway

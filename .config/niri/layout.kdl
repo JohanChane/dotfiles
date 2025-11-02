@@ -1,0 +1,55 @@
+layout {
+    gaps 8
+
+    center-focused-column "never"
+    //empty-workspace-above-first
+    always-center-single-column
+    default-column-display "tabbed"
+
+    preset-column-widths {
+        proportion 0.33333
+        proportion 0.5
+        proportion 0.66667
+    }
+
+    default-column-width { proportion 0.5; }
+    focus-ring {
+        width 3
+
+        active-color "#7fc8ff"
+        inactive-color "#505050"
+        urgent-color "#9b0000"
+    }
+
+    border {
+        off
+    }
+
+    shadow {
+    }
+
+    tab-indicator {
+        hide-when-single-tab
+        place-within-column
+        width 5
+        gap 4
+        length total-proportion=1.0
+        //position "top"
+        position "left"
+        gaps-between-tabs 8
+        corner-radius 8
+        active-color   "red"
+        inactive-color "#7fc8ff"
+        urgent-color   "#EAE2B7"
+        //active-color "red"
+        //inactive-color "gray"
+        //urgent-color "blue"
+    }
+
+    struts {
+        left 4
+        right 4
+        top 2
+        bottom 2
+    }
+}

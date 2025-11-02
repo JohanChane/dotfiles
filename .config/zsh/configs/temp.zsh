@@ -39,4 +39,3 @@ function bedaemon {
 pkgdiff () {
   LC_ALL=C TZ=GMT0 diff -Naur $1 <(pkg-extract_original $1) | less
 }
-

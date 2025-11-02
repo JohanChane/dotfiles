@@ -1,0 +1,185 @@
+@import "/home/johan/.config/waybar/themes/mocha.css";
+
+/*dms-shell-niri*/
+@define-color bg #101418;
+@define-color group_bg #24282D;
+/*@define-color text #E0E2E8;*/
+@define-color text @text;
+
+@define-color bg_tooltip rgba(0, 0, 0, 0.7);
+@define-color border rgba(255, 255, 255, 0.2);
+
+
+* {
+  font-family: "FantasqueSansM Nerd Font Propo";
+  font-size: 1rem;
+  margin: 1px 0px;
+  padding: 0px;
+  min-height: 0;
+  /*https://github.com/Alexays/Waybar/issues/1351*/
+  all: initial;
+  font-weight: normal;
+}
+
+button {
+  min-height: 24px;
+  min-width: 16px;
+}
+
+#waybar {
+}
+
+window#waybar {
+  background: @bg;
+  color: @text;
+  border-radius: 50px;
+  border-bottom: 1px solid #181825;
+  min-height: 0;
+}
+
+#waybar.hidden {
+  opacity: 0.2;
+}
+
+tooltip {
+  background: @bg_tooltip;
+  border-radius: 5px;
+  border-width: 1px;
+  border-style: solid;
+  border-color: @border;
+}
+
+tooltip label {
+  color: @text;
+}
+
+/*=== Set common attributes ===*/
+#workspaces,
+#window,
+#custom-music,
+#clock,
+#network,
+#cpu,
+#memory,
+#custom-orphaned-pkgs,
+#custom-notification,
+#tray,
+#pulseaudio,
+#pulseaudio.microphone,
+#battery,
+#custom-powermenu
+{
+  background-color: @group_bg;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+
+/*=== Set radius/padding/margin (Individual modules) ===*/
+#workspaces,
+#window,
+#custom-music,
+#clock,
+#custom-orphaned-pkgs,
+#custom-notification,
+#tray,
+#network,
+#custom-powermenu
+{
+  border-radius: 1rem;
+  margin-left: 3px;
+}
+
+/*=== Set radius/padding/margin (Grouped modules) ===*/
+/*## Left*/
+#cpu,
+#pulseaudio
+{
+  border-radius: 1rem 0px 0px 1rem;
+  margin-left: 3px;
+}
+/*## Middle*/
+/*## Right*/
+#memory,
+#pulseaudio.microphone
+{
+  border-radius: 0px 1rem 1rem 0px;
+  margin-left: 0px;
+}
+
+/*=== Rightmost module ===*/
+#custom-powermenu
+{
+  margin-right: 3px;
+}
+
+/*=== Others ===*/
+/*[sway workspaces style](https://man.freebsd.org/cgi/man.cgi?query=waybar-sway-workspaces&sektion=5&manpath=FreeBSD+13.2-RELEASE+and+Ports#end)*/
+#workspaces button {
+    padding: 0 5px;
+    background-color: transparent;
+    color: @text
+}
+
+#workspaces button:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+#workspaces button.focused {
+    background-color: #4c7899;
+    color: @text
+}
+
+#workspaces button.urgent {
+    background-color: #eb4d4b;
+    color: @text
+}
+
+/*#workspaces button {*/
+/*  color: @lavender;*/
+/*  border-radius: 1rem;*/
+/*}*/
+/**/
+/*#workspaces button.active {*/
+/*  color: @sky;*/
+/*  border-radius: 1rem;*/
+/*}*/
+/**/
+/*#workspaces button:hover {*/
+/*  color: @sapphire;*/
+/*  border-radius: 1rem;*/
+/*}*/
+
+#battery {
+  color: @green;
+}
+
+#battery.charging {
+  color: @green;
+}
+
+#battery.warning:not(.charging) {
+  color: @red;
+}
+
+#tray menu * {
+  color: @text;
+}
+
+#tray menu {
+  background-color: @base;
+  padding: 1rem;
+  margin: 1rem;
+  border: 2px solid @sky;
+  border-radius: 1rem;
+}
+
+#tray menu menuitem {
+  padding-left: 3px;
+  padding-right: 3px;
+  border-radius: 3rem;
+}
+
+#tray menu menuitem:hover {
+  background-color: @sky;
+  color: @text;
+}

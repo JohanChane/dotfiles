@@ -2,19 +2,19 @@
   "layer": "top", // Waybar at top layer
   "position": "top", // Waybar position (top|bottom|left|right)
   //"width": 1280, // Waybar width
+  //"height": 32,
   "margin": "3px 5px",
-  "height": 32,
   "icon-size": 16,
   "include": [
-    "modules.jsonc",
+    "modules.jsonc"
   ],
   "modules-left": [
     "niri/workspaces",
-    "niri/window",
+    "niri/window"
   ],
   "modules-center": [
     "custom/music",
-    "clock",
+    "clock"
   ],
   "modules-right": [
     "cpu",
@@ -25,6 +25,6 @@
     "network",
     "pulseaudio",
     "pulseaudio#microphone",
-    "custom/powermenu",
+    "custom/powermenu"
   ]
 }

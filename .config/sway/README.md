@@ -1,7 +1,8 @@
 ## Installation
 
 ```sh
-paru -S niri-git brightnessctl xwayland-satellite
+paru -S sway    # OR swayfx
+paru -S xorg-xwayland
 paru -S waybar otf-font-awesome
 paru -S swayidle swaync
 paru -S swaylock-effects swaybg
@@ -11,6 +12,7 @@ paru -S xdg-desktop-portal xdg-desktop-portal-gtk xdg-desktop-portal-gnome
 # ## polkit
 paru -S polkit-gnome
 
+paru -S brightnessctl
 paru -S wl-clipboard
 ```
 
@@ -19,7 +21,6 @@ paru -S rofi
 ```
 
 ```sh
-systemctl enable xwayland-satellite.service --user
 systemctl enable swaync --user
 ```
 
@@ -83,4 +84,4 @@ gtk-im-module=fcitx
 
 ## References
 
--   [niri config example](https://linux.do/t/topic/861559?page=3)
+-   [Sway](https://wiki.archlinuxcn.org/wiki/Sway)

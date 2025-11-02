@@ -30,40 +30,7 @@ output "eDP-1" {
     position x=0 y=0
 }
 
-layout {
-    gaps 4
-
-    center-focused-column "never"
-    empty-workspace-above-first
-    always-center-single-column
-
-    preset-column-widths {
-        proportion 0.33333
-        proportion 0.5
-        proportion 0.66667
-    }
-
-    default-column-width { proportion 0.5; }
-    focus-ring {
-        width 2
-        active-color "#7fc8ff"
-        inactive-color "#505050"
-    }
-
-    border {
-        off
-    }
-
-    shadow {
-    }
-
-    struts {
-        // left 64
-        // right 64
-        // top 64
-        // bottom 64
-    }
-}
+include "layout.kdl"
 
 hotkey-overlay {
     skip-at-startup

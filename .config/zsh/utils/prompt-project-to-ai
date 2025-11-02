@@ -1,0 +1,637 @@
+#!/usr/bin/env python3
+import os
+import sys
+import argparse
+import subprocess
+import shutil
+import platform
+from datetime import datetime, timedelta
+
+# 默认忽略的文件和目录
+DEFAULT_IGNORES = {
+    '.git', '.svn', '.hg', '.DS_Store', '.vscode', '.idea',
+    '__pycache__', 'node_modules', 'venv', '.env',
+    '*.pyc', '*.pyo', '*.so', '*.dll', '.exe',
+    '*.log', '.tmp', '.temp', 'dist', 'build',
+    'package-lock.json', 'yarn.lock',
+    'coverage', '.coverage', 'htmlcov', '.pytest_cache',
+    'target', '.cache'
+}
+
+def get_system_info():
+    """获取系统信息"""
+    system = platform.system()
+    release = platform.release()
+    version = platform.version()
+    architecture = platform.architecture()[0]
+    machine = platform.machine()
+
+    # 更详细的系统识别
+    if system == "Windows":
+        system_detail = f"Windows {release} ({version})"
+    elif system == "Darwin":
+        # macOS 系统
+        mac_ver = platform.mac_ver()[0]
+        system_detail = f"macOS {mac_ver} ({system} {release})"
+    elif system == "Linux":
+        # 尝试获取 Linux 发行版信息
+        try:
+            import distro
+            distro_name = distro.name(pretty=True)
+            system_detail = f"{distro_name} ({system} {release})"
+        except ImportError:
+            system_detail = f"Linux {release}"
+    else:
+        system_detail = f"{system} {release}"
+
+    return {
+        'system': system,
+        'system_detail': system_detail,
+        'architecture': architecture,
+        'machine': machine,
+        'python_version': platform.python_version()
+    }
+
+def is_git_repository(project_dir):
+    """检查目录是否是 Git 仓库"""
+    git_dir = os.path.join(project_dir, '.git')
+    return os.path.exists(git_dir) and os.path.isdir(git_dir)
+
+def get_git_log(project_dir, max_entries=50):
+    """获取 Git 提交日志"""
+    try:
+        result = subprocess.run(
+            ['git', 'log', f'--max-count={max_entries}', '--oneline', '--decorate'],
+            cwd=project_dir,
+            capture_output=True, text=True, timeout=30
+        )
+        if result.returncode == 0:
+            return result.stdout.strip()
+        else:
+            return f"<获取 Git 日志失败: {result.stderr.strip()}>"
+    except subprocess.TimeoutExpired:
+        return "<获取 Git 日志超时>"
+    except Exception as e:
+        return f"<获取 Git 日志出错: {e}>"
+
+def get_git_diff(project_dir):
+    """获取 Git 工作区变更"""
+    try:
+        # 检查是否有未提交的变更
+        status_result = subprocess.run(
+            ['git', 'status', '--porcelain'],
+            cwd=project_dir,
+            capture_output=True, text=True, timeout=10
+        )
+
+        if status_result.returncode != 0 or not status_result.stdout.strip():
+            return "<无未提交的变更>"
+
+        # 获取详细的 diff
+        diff_result = subprocess.run(
+            ['git', 'diff', '--no-color'],
+            cwd=project_dir,
+            capture_output=True, text=True, timeout=30
+        )
+
+        if diff_result.returncode == 0:
+            return diff_result.stdout.strip()
+        else:
+            return f"<获取 Git 差异失败: {diff_result.stderr.strip()}>"
+
+    except subprocess.TimeoutExpired:
+        return "<获取 Git 差异超时>"
+    except Exception as e:
+        return f"<获取 Git 差异出错: {e}>"
+
+def get_git_branch_info(project_dir):
+    """获取 Git 分支信息"""
+    try:
+        # 获取当前分支
+        branch_result = subprocess.run(
+            ['git', 'branch', '--show-current'],
+            cwd=project_dir,
+            capture_output=True, text=True, timeout=10
+        )
+
+        # 获取远程信息
+        remote_result = subprocess.run(
+            ['git', 'remote', '-v'],
+            cwd=project_dir,
+            capture_output=True, text=True, timeout=10
+        )
+
+        branch_info = []
+        if branch_result.returncode == 0 and branch_result.stdout.strip():
+            branch_info.append(f"当前分支: {branch_result.stdout.strip()}")
+
+        if remote_result.returncode == 0 and remote_result.stdout.strip():
+            branch_info.append("远程仓库:")
+            branch_info.extend([f"  {line}" for line in remote_result.stdout.strip().split('\n')])
+
+        return "\n".join(branch_info) if branch_info else "<无分支信息>"
+
+    except Exception as e:
+        return f"<获取分支信息出错: {e}>"
+
+def has_file_command():
+    """检查系统是否有 file 命令"""
+    return shutil.which('file') is not None
+
+def is_text_file_by_file_command(filepath):
+    """使用系统的 file 命令判断是否为文本文件"""
+    try:
+        result = subprocess.run(
+            ['file', '--mime-type', '-b', filepath],
+            capture_output=True, text=True, timeout=5
+        )
+        if result.returncode == 0:
+            mime_type = result.stdout.strip()
+            return (mime_type.startswith('text/') or
+                   mime_type in ['application/xml', 'application/json',
+                               'application/x-sh', 'application/x-python'])
+    except (subprocess.TimeoutExpired, subprocess.SubprocessError, OSError):
+        pass
+    return False
+
+def is_text_file_fallback(filepath):
+    """回退的文本文件检测方法"""
+    try:
+        with open(filepath, 'rb') as f:
+            chunk = f.read(8192)
+
+            if not chunk:
+                return True
+            if b'\0' in chunk:
+                return False
+
+            text_chars = bytearray({7, 8, 9, 10, 12, 13, 27})
+            text_chars.extend(range(32, 127))
+            text_chars = set(text_chars)
+
+            non_text_count = sum(1 for byte in chunk if byte not in text_chars)
+            return non_text_count / len(chunk) <= 0.3
+
+    except (IOError, OSError):
+        return False
+
+def is_text_file(filepath):
+    """判断文件是否为文本文件"""
+    if has_file_command():
+        return is_text_file_by_file_command(filepath)
+    else:
+        return is_text_file_fallback(filepath)
+
+def get_file_modification_time(filepath):
+    """获取文件的修改时间"""
+    try:
+        timestamp = os.path.getmtime(filepath)
+        mod_time = datetime.fromtimestamp(timestamp)
+        return mod_time.strftime("%Y-%m-%d %H:%M:%S")
+    except (OSError, ValueError):
+        return "未知时间"
+
+def should_ignore(path, custom_ignore_file=None):
+    """检查文件或目录是否应该被忽略"""
+    basename = os.path.basename(path)
+
+    for ignore_pattern in DEFAULT_IGNORES:
+        if ignore_pattern.startswith('*'):
+            if basename.endswith(ignore_pattern[1:]):
+                return True
+        elif basename == ignore_pattern:
+            return True
+
+    if custom_ignore_file and os.path.exists(custom_ignore_file):
+        try:
+            with open(custom_ignore_file, 'r', encoding='utf-8') as f:
+                for line in f:
+                    line = line.strip()
+                    if line and not line.startswith('#') and basename == line:
+                        return True
+        except:
+            pass
+
+    try:
+        if os.path.isfile(path) and os.path.getsize(path) > 1024 * 1024:
+            return True
+    except:
+        pass
+
+    return False
+
+def read_file_content(filepath):
+    """读取文件内容，处理编码问题"""
+    if not is_text_file(filepath):
+        return f"<非文本文件已跳过: {filepath}>"
+
+    try:
+        with open(filepath, 'r', encoding='utf-8') as f:
+            return f.read()
+    except UnicodeDecodeError:
+        try:
+            with open(filepath, 'r', encoding=sys.getdefaultencoding()) as f:
+                return f.read()
+        except UnicodeDecodeError:
+            try:
+                with open(filepath, 'r', encoding='latin-1') as f:
+                    return f.read()
+            except Exception as e:
+                return f"<无法读取文件: {filepath} - {e}>"
+    except Exception as e:
+        return f"<读取文件出错: {e}>"
+
+def generate_ai_prompt_header(project_dir, file_count, total_size, ignored_count, binary_count, is_git_repo=False, modified_since=None):
+    """生成AI提示词头部"""
+    abs_path = os.path.abspath(project_dir)
+    current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    # 获取系统信息
+    system_info = get_system_info()
+
+    header = [
+        "🤖 AI 项目分析提示词",
+        "=" * 60,
+        "",
+        "📋 指令说明:",
+        "你是一个资深的软件开发助手。以下是用户项目的完整代码结构。",
+        "请仔细分析这个项目，理解其架构、技术和功能，准备回答用户的各种问题。",
+        "",
+        "🎯 你的任务:",
+        "1. 理解项目的整体结构和架构设计",
+        "2. 识别使用的技术栈、框架和库",
+        "3. 分析代码质量和最佳实践",
+        "4. 准备回答关于功能、bug修复、代码改进等问题",
+        "5. 提供技术建议和优化方案",
+        "",
+        "💡 用户可能会询问:",
+        "- 代码功能解释和修改建议",
+        "- Bug 排查和修复方案",
+        "- 新功能实现思路",
+        "- 代码重构和优化建议",
+        "- 技术选型和架构设计问题",
+        "- 部署和配置问题",
+        "- 系统相关问题和兼容性",
+        "",
+        "📊 项目概览:",
+        f"- 项目路径: {abs_path}",
+        f"- 分析时间: {current_time}",
+        f"- 操作系统: {system_info['system_detail']}",
+        f"- 系统架构: {system_info['architecture']} ({system_info['machine']})",
+        f"- Python 版本: {system_info['python_version']}",
+        f"- Git 仓库: {'是' if is_git_repo else '否'}",
+        f"- 分析文件: {file_count} 个",
+        f"- 忽略文件: {ignored_count} 个",
+        f"- 跳过非文本文件: {binary_count} 个",
+        f"- 总代码大小: {total_size} 字节 ({total_size/1024:.1f} KB)",
+        f"- 文件检测方法: {'file 命令' if has_file_command() else '回退方法'}",
+    ]
+
+    # 添加时间过滤信息
+    if modified_since is not None:
+        header.append(f"- 时间过滤: 最近 {modified_since} 秒内修改的文件")
+
+    header.extend([
+        "",
+        "📁 项目文件详情:",
+        "=" * 60,
+        ""
+    ])
+
+    return "\n".join(header)
+
+def generate_git_section(project_dir, git_diff_only=False):
+    """生成 Git 相关信息部分（Markdown 格式）
+    
+    Args:
+        project_dir: 项目目录
+        git_diff_only: 如果为 True，只包含 Git diff 信息
+    """
+    if not is_git_repository(project_dir):
+        return ""
+
+    git_section = [
+        "\n" + "=" * 60,
+        "## 🔰 Git 仓库信息",
+        "=" * 60,
+        ""
+    ]
+
+    if not git_diff_only:
+        # 分支信息
+        branch_info = get_git_branch_info(project_dir)
+        git_section.extend([
+            "### 🌿 分支信息",
+            "生成命令: `git branch --show-current` 和 `git remote -v`",
+            "```",
+            branch_info,
+            "```",
+            ""
+        ])
+
+        # 提交日志
+        git_log = get_git_log(project_dir)
+        git_section.extend([
+            "### 📜 最近提交记录",
+            "生成命令: `git log --max-count=50 --oneline --decorate`",
+            "```",
+            git_log,
+            "```",
+            ""
+        ])
+
+    # 工作区变更（总是包含）
+    git_diff = get_git_diff(project_dir)
+    git_section.extend([
+        "### 📝 未提交的变更",
+        "生成命令: `git diff --no-color`",
+        "```diff",
+        git_diff,
+        "```",
+        ""
+    ])
+
+    return "\n".join(git_section)
+
+def get_files_modified_since(project_dir, seconds_ago):
+    """获取指定时间范围内修改过的文件（基于文件系统时间）"""
+    modified_files = set()
+    cutoff_time = datetime.now() - timedelta(seconds=seconds_ago)
+
+    print(f"🔍 时间过滤: 查找在 {cutoff_time.strftime('%Y-%m-%d %H:%M:%S')} 之后修改的文件")
+
+    for root, dirs, files in os.walk(project_dir):
+        # 应用忽略规则到目录
+        dirs[:] = [d for d in dirs if not should_ignore(os.path.join(root, d), None)]
+
+        for file in files:
+            filepath = os.path.join(root, file)
+            rel_path = os.path.relpath(filepath, project_dir)
+
+            if should_ignore(filepath, None):
+                continue
+
+            try:
+                mod_time = datetime.fromtimestamp(os.path.getmtime(filepath))
+                if mod_time >= cutoff_time:
+                    modified_files.add(rel_path)
+                    print(f"  ✅ 找到修改文件: {rel_path}")
+            except (OSError, ValueError):
+                continue
+
+    return modified_files
+
+def generate_project_prompt(project_dir, custom_ignore_file=None, modified_since=None, git_diff_only=False):
+    """生成项目提示文本"""
+    output = []
+    abs_path = os.path.abspath(project_dir)
+
+    file_count = 0
+    total_size = 0
+    ignored_count = 0
+    binary_count = 0
+    file_entries = []
+
+    # 如果指定了时间过滤，获取修改过的文件列表
+    modified_files = set()
+
+    if modified_since is not None:
+        print(f"⏰ 正在查找最近 {modified_since} 秒内修改的文件...")
+        modified_files = get_files_modified_since(project_dir, modified_since)
+        print(f"📝 找到 {len(modified_files)} 个在最近 {modified_since} 秒内修改的文件")
+
+    # 遍历文件
+    for root, dirs, files in os.walk(project_dir):
+        dirs[:] = [d for d in dirs if not should_ignore(os.path.join(root, d), custom_ignore_file)]
+
+        for file in files:
+            filepath = os.path.join(root, file)
+            rel_path = os.path.relpath(filepath, project_dir)
+
+            if should_ignore(filepath, custom_ignore_file):
+                ignored_count += 1
+                continue
+
+            # 如果启用了时间过滤，只处理修改过的文件
+            if modified_since is not None and rel_path not in modified_files:
+                continue
+
+            if not is_text_file(filepath):
+                binary_count += 1
+                continue
+
+            try:
+                file_size = os.path.getsize(filepath)
+                total_size += file_size
+                mod_time = get_file_modification_time(filepath)
+
+                file_entries.append({
+                    'path': rel_path,
+                    'size': file_size,
+                    'mod_time': mod_time,
+                    'content': None
+                })
+                file_count += 1
+            except:
+                continue
+
+    # 检查是否是 Git 仓库
+    is_git_repo = is_git_repository(project_dir)
+
+    # 生成AI提示词头部
+    output.append(generate_ai_prompt_header(project_dir, file_count, total_size, ignored_count, binary_count, is_git_repo, modified_since))
+
+    # 如果是 Git 仓库，添加 Git 信息
+    if is_git_repo:
+        output.append(generate_git_section(project_dir, git_diff_only))
+
+    # 第二遍遍历：读取文件内容
+    for entry in file_entries:
+        filepath = os.path.join(project_dir, entry['path'])
+        content = read_file_content(filepath)
+
+        if content.startswith("<非文本文件已跳过:"):
+            binary_count += 1
+            file_count -= 1
+            continue
+
+        # 添加修改时间标记
+        output.append(f"\n## 文件: {entry['path']}")
+        output.append(f"📏 大小: {entry['size']} 字节")
+        output.append(f"📅 修改时间: {entry['mod_time']}")
+        if modified_since:
+            output.append(f"🕒 最近修改: 是 (在 {modified_since} 秒内)")
+        output.append("```")
+        output.append(content)
+        output.append("```")
+        output.append("-" * 50)
+
+    # 更新总结部分
+    summary = [
+        "",
+        "=" * 60,
+        ""
+    ]
+
+    if modified_since:
+        if file_count == 0:
+            summary.extend([
+                f"⚠️  注意: 在最近 {modified_since} 秒内没有找到修改的文本文件",
+                "这可能是因为:",
+                "  • 最近没有修改任何代码文件",
+                "  • 修改的文件被忽略规则过滤了",
+                "  • 修改的是二进制文件或非文本文件",
+                "  • 文件系统时间不准确",
+                "",
+                "建议使用以下命令重新运行以查看详细调试信息:",
+                f"  python {sys.argv[0]} --modified-since {modified_since}",
+                ""
+            ])
+        else:
+            summary.extend([
+                f"🎯 注意: 本次分析专注于最近 {modified_since} 秒内修改的 {file_count} 个文件",
+                "这有助于聚焦于最近的代码变更和当前开发任务",
+                ""
+            ])
+
+    summary.extend([
+        "基于以上代码，你是否已经全面了解了这个项目?",
+        "可以随时向你提问关于以下的问题:",
+        "  • 代码功能和逻辑解释",
+        "  • Bug 排查和修复",
+        "  • 新功能开发建议",
+        "  • 代码重构和优化",
+        "  • 架构设计改进",
+        "  • 技术栈相关问题",
+        "  • 部署和配置问题",
+        "  • 系统兼容性问题",
+        "",
+        "为了使我更加方便地修改文件:",
+        "  • 如果是输出了整个文件的内容, 你就提示覆盖整个文件",
+        "  • 如果不是要修改整个文件的内容, 你就提示更新文件的部分内容",
+        "  • 如果一个文件或函数很长时, 你就提示修改了哪些内容, 前后有没修改的内容让我方便定位",
+        "",
+        "你有什么不确定或者歧义的时候要向我确定再产出",
+        "你是否准备好了?",
+        ""
+    ])
+
+    output.extend(summary)
+
+    return "\n".join(output)
+
+def main():
+    parser = argparse.ArgumentParser(
+        description='生成项目文件结构提示给AI',
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog=f'''
+使用示例:
+  {sys.argv[0]}                    # 分析当前目录，输出到终端
+  {sys.argv[0]} /path/to/project   # 分析指定目录
+  {sys.argv[0]} --output prompt.txt        # 保存到文件
+  {sys.argv[0]} --modified-since 3600      # 只分析最近1小时内修改的文件
+  {sys.argv[0]} --modified-since 1800 --output recent_changes.txt  # 最近30分钟修改的文件
+  {sys.argv[0]} --git-diff                # 包含 Git diff 信息
+
+时间过滤选项:
+  --modified-since 3600    # 最近1小时 (3600秒)
+  --modified-since 1800    # 最近30分钟
+  --modified-since 300     # 最近5分钟
+
+Git 选项:
+  --git-diff               # 包含 Git diff 信息（同时包含分支和提交历史）
+
+默认忽略的文件/目录:
+  {', '.join(sorted(DEFAULT_IGNORES))}
+        '''
+    )
+
+    parser.add_argument('project_dir', nargs='?', default='.',
+                       help='项目目录 (默认: 当前目录)')
+    parser.add_argument('--ignore-file', '-i',
+                       help='自定义 ignore 文件路径 (如 .gitignore)')
+    parser.add_argument('--output', '-o',
+                       help='输出到文件')
+    parser.add_argument('--force-fallback', action='store_true',
+                       help='强制使用回退方法，不使用 file 命令')
+    parser.add_argument('--git-diff', action='store_true',
+                       help='包含 Git diff 信息（同时包含分支和提交历史）')
+    # 新增时间过滤参数
+    parser.add_argument('--modified-since', type=int, metavar='SECONDS',
+                       help='只分析最近指定秒数内修改过的文件')
+
+    args = parser.parse_args()
+
+    project_dir = args.project_dir
+
+    if not os.path.exists(project_dir):
+        print(f"错误: 目录不存在: {project_dir}")
+        sys.exit(1)
+
+    if not os.path.isdir(project_dir):
+        print(f"错误: 不是目录: {project_dir}")
+        sys.exit(1)
+
+    if args.ignore_file and not os.path.exists(args.ignore_file):
+        print(f"警告: 忽略文件不存在: {args.ignore_file}")
+        args.ignore_file = None
+
+    if args.force_fallback:
+        global is_text_file
+        is_text_file = is_text_file_fallback
+        print("⚠️  强制使用回退检测方法")
+
+    # 显示系统信息
+    system_info = get_system_info()
+    print(f"💻 运行环境: {system_info['system_detail']}")
+    print(f"🏗️  系统架构: {system_info['architecture']} ({system_info['machine']})")
+    print(f"🐍 Python 版本: {system_info['python_version']}")
+
+    # 显示时间过滤信息
+    if args.modified_since:
+        time_desc = ""
+        if args.modified_since < 60:
+            time_desc = f"({args.modified_since}秒)"
+        elif args.modified_since < 3600:
+            time_desc = f"({args.modified_since//60}分钟)"
+        else:
+            time_desc = f"({args.modified_since//3600}小时)"
+        print(f"⏰ 时间过滤: 只分析最近 {args.modified_since} 秒内修改的文件 {time_desc}")
+
+    # 显示 Git 信息
+    if args.git_diff:
+        print("🔀 Git 信息: 包含分支信息、提交历史和未提交的变更")
+
+    print("🔍 正在分析项目结构...")
+
+    prompt = generate_project_prompt(project_dir, args.ignore_file, args.modified_since, args.git_diff)
+
+    if args.output:
+        try:
+            with open(args.output, 'w', encoding='utf-8') as f:
+                f.write(prompt)
+            print(f"💾 项目提示已保存到: {args.output}")
+        except Exception as e:
+            print(f"❌ 保存文件失败: {e}")
+            sys.exit(1)
+    else:
+        print(prompt)
+        return
+
+    if args.output:
+        print("\n📊 预览 (前20行):")
+        print("=" * 50)
+        lines = prompt.split('\n')
+        for i, line in enumerate(lines[:20]):
+            print(line)
+        if len(lines) > 20:
+            print(f"... (还有 {len(lines) - 20} 行)")
+
+        print(f"\n📈 统计: 总字符数: {len(prompt)}")
+        if args.modified_since:
+            file_count = len([l for l in lines if l.startswith('## 文件:')])
+            print(f"🎯 专注于最近修改的 {file_count} 个文件")
+        print("✅ 完成! 现在可以将文件内容提供给 AI 助手进行分析")
+
+if __name__ == "__main__":
+    main()

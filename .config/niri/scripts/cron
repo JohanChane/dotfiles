@@ -41,7 +41,7 @@ SCRIPT_DIR = os.path.expanduser('~/.config/niri/scripts')
 # Task configuration - interval in seconds
 tasks: List[CronTask] = [
     CronTask('wallpaper', (
-      f'{SCRIPT_DIR}/wallpaper.sh'
+      f'{SCRIPT_DIR}/wallpaper'
       ' --dir $HOME/My/Workspace/Src/Projects/wallpaper.yaocccc'
       ' --dir $HOME/My/Workspace/Src/Projects/aesthetic-wallpapers/images'
     ), 5 * 60, True),

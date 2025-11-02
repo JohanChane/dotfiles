@@ -1,0 +1,14 @@
+#!/bin/bash
+
+script_dir=$HOME/.config/sway/scripts
+
+lock=$script_dir/lock
+
+pkill swayidle
+swayidle -w \
+  timeout 600 "$lock" \
+  timeout 720 'swaymsg "output * power off"' \
+  resume 'swaymsg "output * power on"' \
+  timeout 1800 'systemctl suspend' \
+  resume 'swaymsg "output * power on"' \
+  before-sleep "$lock"

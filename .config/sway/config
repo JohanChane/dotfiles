@@ -1,0 +1,49 @@
+# ## Variables
+set $config_dir /home/johan/.config/sway/configs
+set $script_dir /home/johan/.config/sway/scripts
+
+set $mod Mod4
+set $alt Mod1
+
+set $left h
+set $down j
+set $up k
+set $right l
+
+# ## Output configuration
+output HDMI-A-1 scale 1 resolution 2560x1440 position 0,0
+
+include keybinding.conf
+#include effects.conf
+
+# ## Gaps and Borders
+gaps inner 5
+gaps outer 5
+smart_gaps on
+
+# ## Changing colors
+# class                 border  backgr. text    indicator child_border
+#client.focused          #4c7899 #285577 #ffffff #2e9ef4   #285577
+#client.focused_inactive #333333 #5f676a #ffffff #484e50   #5f676a
+#client.unfocused        #333333 #222222 #888888 #292d2e   #222222
+#client.urgent           #2f343a #900000 #ffffff #900000   #900000
+#client.placeholder      #000000 #0c0c0c #ffffff #000000   #0c0c0c
+#client.background       #ffffff
+
+client.focused          #4c7899 #285577 #ffffff #2e9ef4   #7fc8ff
+
+# ## Title
+hide_edge_borders smart
+# 使用标题栏变小
+#font pango:monospace 8
+# See [ref](https://github.com/swaywm/sway/pull/3145#issue-381891870)
+titlebar_border_thickness 1
+titlebar_padding 3
+
+# ## Layout
+#workspace_layout tabbed
+
+include window_rules.conf
+
+include /etc/sway/config.d/*
+include autostart.conf

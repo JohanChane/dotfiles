@@ -1,0 +1,32 @@
+{
+  "layer": "top", // Waybar at top layer
+  "position": "top", // Waybar position (top|bottom|left|right)
+  //"width": 1280, // Waybar width
+  //"height": 32,
+  "margin": "3px 5px",
+  "icon-size": 16,
+  "include": [
+    "modules.jsonc"
+  ],
+  "modules-left": [
+    "sway/workspaces",
+    "sway/mode",
+    "sway/scratchpad",
+    "sway/window"
+  ],
+  "modules-center": [
+    "custom/music",
+    "clock"
+  ],
+  "modules-right": [
+    "cpu",
+    "memory",
+    "custom/orphaned-pkgs",
+    "custom/notification",
+    "tray",
+    "network",
+    "pulseaudio",
+    "pulseaudio#microphone",
+    "custom/powermenu"
+  ]
+}

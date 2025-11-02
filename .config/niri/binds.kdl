@@ -1,10 +1,10 @@
 binds {
     Mod+Shift+Slash { show-hotkey-overlay; }
 
-    Mod+D hotkey-overlay-title="Run an Application: rifo" { spawn-sh "$HOME/.config/niri/scripts/laucher.sh"; }
-    Mod+X hotkey-overlay-title="Switch Windows" { spawn-sh "$HOME/.config/niri/scripts/window-switcher.sh"; }
+    Mod+D hotkey-overlay-title="Run an Application: rifo" { spawn-sh "$HOME/.config/niri/scripts/laucher"; }
+    Mod+X hotkey-overlay-title="Switch Windows" { spawn-sh "$HOME/.config/niri/scripts/window-switcher"; }
     Mod+Return hotkey-overlay-title="Open a Terminal: kitty" { spawn-sh "kitty --single-instance"; }
-    Super+Alt+L hotkey-overlay-title="Lock the Screen: swaylock" { spawn-sh "$HOME/.config/niri/scripts/lock.sh"; }
+    Super+Alt+L hotkey-overlay-title="Lock the Screen: swaylock" { spawn-sh "$HOME/.config/niri/scripts/lock"; }
 
     Super+Alt+W hotkey-overlay-title=null { spawn-sh "firefox"; }
     Super+Alt+T hotkey-overlay-title=null { spawn-sh "$HOME/.config/niri/scripts/goldendict.sh -p"; }
@@ -12,13 +12,13 @@ binds {
     Super+Alt+S hotkey-overlay-title=null { spawn-sh "flameshot gui"; }
 
     // ## audio
-    XF86AudioRaiseVolume allow-when-locked=true { spawn-sh "$HOME/.config/niri/scripts/audio-raise.sh"; }
-    XF86AudioLowerVolume allow-when-locked=true { spawn-sh "$HOME/.config/niri/scripts/audio-lower.sh"; }
-    XF86AudioMute        allow-when-locked=true { spawn-sh "$HOME/.config/niri/scripts/audio-mute.sh"; }
-    XF86AudioMicMute     allow-when-locked=true { spawn-sh "$HOME/.config/niri/scripts/audio-mic-mute.sh"; }
+    XF86AudioRaiseVolume allow-when-locked=true { spawn-sh "$HOME/.config/niri/scripts/audioctl up"; }
+    XF86AudioLowerVolume allow-when-locked=true { spawn-sh "$HOME/.config/niri/scripts/audioctl down"; }
+    XF86AudioMute        allow-when-locked=true { spawn-sh "$HOME/.config/niri/scripts/audioctl mute-toggle"; }
+    XF86AudioMicMute     allow-when-locked=true { spawn-sh "$HOME/.config/niri/scripts/audioctl mic-mute-toggle"; }
     // ## brightness
-    XF86MonBrightnessUp allow-when-locked=true { spawn-sh "$HOME/.config/niri/scripts/brightness-up.sh"; }
-    XF86MonBrightnessDown allow-when-locked=true { spawn-sh "$HOME/.config/niri/scripts/brightness-down.sh"; }
+    XF86MonBrightnessUp allow-when-locked=true { spawn-sh "$HOME/.config/niri/scripts/brightnessctl up"; }
+    XF86MonBrightnessDown allow-when-locked=true { spawn-sh "$HOME/.config/niri/scripts/brightnessctl down"; }
 
     Mod+O repeat=false { toggle-overview; }
 
@@ -95,26 +95,33 @@ binds {
     Mod+Ctrl+Shift+WheelScrollDown { move-column-right; }
     Mod+Ctrl+Shift+WheelScrollUp   { move-column-left; }
 
-    Mod+0 { focus-workspace 1; }
-    Mod+1 { focus-workspace 2; }
-    Mod+2 { focus-workspace 3; }
-    Mod+3 { focus-workspace 4; }
-    Mod+4 { focus-workspace 5; }
-    Mod+5 { focus-workspace 6; }
-    Mod+6 { focus-workspace 7; }
-    Mod+7 { focus-workspace 8; }
-    Mod+8 { focus-workspace 9; }
-    Mod+9 { focus-workspace 10; }
-    Mod+Ctrl+0 { move-column-to-workspace 1; }
-    Mod+Ctrl+1 { move-column-to-workspace 2; }
-    Mod+Ctrl+2 { move-column-to-workspace 3; }
-    Mod+Ctrl+3 { move-column-to-workspace 4; }
-    Mod+Ctrl+4 { move-column-to-workspace 5; }
-    Mod+Ctrl+5 { move-column-to-workspace 6; }
-    Mod+Ctrl+6 { move-column-to-workspace 7; }
-    Mod+Ctrl+7 { move-column-to-workspace 8; }
-    Mod+Ctrl+8 { move-column-to-workspace 9; }
-    Mod+Ctrl+9 { move-column-to-workspace 10; }
+    Mod+1 { focus-workspace 1; }
+    Mod+2 { focus-workspace 2; }
+    Mod+3 { focus-workspace 3; }
+    Mod+4 { focus-workspace 4; }
+    Mod+5 { focus-workspace 5; }
+    Mod+6 { focus-workspace 6; }
+    Mod+7 { focus-workspace 7; }
+    Mod+8 { focus-workspace 8; }
+    Mod+9 { focus-workspace 9; }
+    Mod+Ctrl+1 { move-column-to-workspace 1; }
+    Mod+Ctrl+2 { move-column-to-workspace 2; }
+    Mod+Ctrl+3 { move-column-to-workspace 3; }
+    Mod+Ctrl+4 { move-column-to-workspace 4; }
+    Mod+Ctrl+5 { move-column-to-workspace 5; }
+    Mod+Ctrl+6 { move-column-to-workspace 6; }
+    Mod+Ctrl+7 { move-column-to-workspace 7; }
+    Mod+Ctrl+8 { move-column-to-workspace 8; }
+    Mod+Ctrl+9 { move-column-to-workspace 9; }
+    Mod+Shift+1 { move-workspace-to-index 1; }
+    Mod+Shift+2 { move-workspace-to-index 2; }
+    Mod+Shift+3 { move-workspace-to-index 3; }
+    Mod+Shift+4 { move-workspace-to-index 4; }
+    Mod+Shift+5 { move-workspace-to-index 5; }
+    Mod+Shift+6 { move-workspace-to-index 6; }
+    Mod+Shift+7 { move-workspace-to-index 7; }
+    Mod+Shift+8 { move-workspace-to-index 8; }
+    Mod+Shift+9 { move-workspace-to-index 9; }
 
     Mod+Tab { focus-workspace-previous; }
 

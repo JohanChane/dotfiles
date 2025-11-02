@@ -1,0 +1,21 @@
+#!/bin/bash
+
+op=${1:-up}
+
+case $op in
+"up")
+  wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.05+
+  ;;
+"down")
+  wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.05-
+  ;;
+"mute-toggle")
+  wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle
+  ;;
+"mic-mute-toggle")
+  wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle
+  ;;
+*)
+  exit 1
+  ;;
+esac
