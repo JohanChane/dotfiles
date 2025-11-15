@@ -7,13 +7,14 @@ source ~/.config/zsh/configs/plug_mgr.zsh
 
 source ~/.config/zsh/configs/fzf.zsh
 source ~/.config/zsh/configs/file_mgr.zsh
+source ~/.config/zsh/configs/theme.zsh
 
 source ~/.config/zsh/configs/asdf.zsh
+source ~/.config/zsh/configs/zellij.zsh
+source ~/.config/zsh/configs/cmdbridge.zsh
 
 source ~/.config/zsh/configs/utils_sys.zsh
 source ~/.config/zsh/configs/utils.zsh
-
-source ~/.config/zsh/configs/cmdbridge.zsh
 
 source ~/.config/zsh/configs/wayland.zsh
 
