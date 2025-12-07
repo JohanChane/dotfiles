@@ -234,3 +234,6 @@ user_pref("layout.word_select.eat_space_to_next_word", false);
 // ## My
 user_pref("browser.startup.homepage", "http://captive.apple.com");        // 设置新窗口为空白页
 user_pref("browser.newtab.url", "about:blank");                           // 设置新标签页为空白页
+
+user_pref("browser.compactmode.show", true);    // 1. 让“紧凑”选项出现在自定义面板里
+user_pref("browser.uidensity", 1);              // 2. 0=normal（普通） 1=compact（紧凑） 2=touch（触控）

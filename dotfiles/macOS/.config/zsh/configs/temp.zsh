@@ -1,4 +1,5 @@
-function findfzf {
+# Usage: fzf-find <dir>
+function fzf-find {
   command fzf --ansi --query ${*:-""} \
     --preview "command bat -p --color=always {}" \
     --preview-window ~8,+{2}-5 \
@@ -9,7 +10,8 @@ function findfzf {
     | { read -r file && [ -n "$file" ] && $EDITOR "$file"; }
 }
 
-function rgfzf {
+# Usage: fzf-grep <dir>
+function fzf-grep {
   command rg --color=always --line-number --no-heading --smart-case "${*:-}" \
     | command fzf -d':' --ansi \
         --preview "command bat -p --color=always {1} --highlight-line {2}" \
@@ -27,15 +29,4 @@ function gitlog1 {
 }
 function gitlog2 {
   git log --graph --abbrev-commit --decorate --date=short --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ad)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(bold yellow)%d%C(reset)' ${*:-}
-}
-
-# ## bedaemon
-function bedaemon {
-  cmd="$*"
-  setsid "$cmd" >/dev/null 2>&1 </dev/null &
-}
-
-# ## pkg_scripts
-pkgdiff () {
-  LC_ALL=C TZ=GMT0 diff -Naur $1 <(pkg-extract_original $1) | less
 }

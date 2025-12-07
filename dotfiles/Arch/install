@@ -1,0 +1,116 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
+
+# -------------------- 参数解析 --------------------
+_pos=()
+
+usage() {
+  cat <<EOF
+Usage: $0 [OPTIONS] [POS...]
+  -h, --help    显示帮助并退出
+EOF
+  exit "${1:-0}"
+}
+
+while (($#)); do
+  case $1 in
+  -h | --help) usage 0 ;;
+  -*)
+    echo "ERROR: 未知选项 $1" >&2
+    usage 1
+    ;;
+  *) _pos+=("$1") ;;
+  esac
+  shift
+done
+
+# -------------------- main --------------------
+main() {
+  # 没有位置参数时给出提示
+  if ((${#_pos[@]} == 0)); then
+    usage 0
+  fi
+
+  # 遍历所有位置参数并调用对应函数
+  for cmd in "${_pos[@]}"; do
+    case "$cmd" in
+    basic_utils) install_basic_utils ;;
+    zsh) install_zsh ;;
+    vim) install_vim ;;
+    *) echo "WARN: 未知命令 '$cmd'，已跳过" ;;
+    esac
+  done
+}
+
+# -------------------- 业务函数 --------------------
+install_all() {
+  install_basic_utils
+  install_vim
+  install_zsh
+  install_asdf
+  install_yazi
+}
+
+install_basic_utils() {
+  echo ">>> install basic utils ..."
+  sudo pacman -S 7zip jq bat fd ripgrep fzf zoxide
+  sudo pacman -S vim neovim
+  echo ">>> install basic utils done"
+}
+
+install_zsh() {
+  echo ">>> install zsh ..."
+  paru -S zsh-antidote
+
+  src_config_dir="$SCRIPT_DIR/.config/zsh"
+  dst_config_dir="${XDG_CONFIG_HOME:-$HOME/.config}/zsh"
+
+  [ ! -d $dst_config_dir ] && mkdir $dst_config_dir
+  cp -rfP $src_config_dir/* $dst_config_dir
+
+  cp "$SCRIPT_DIR/.zshrc" ~
+  cp "$SCRIPT_DIR/.zprofile" ~
+  cp "$SCRIPT_DIR/.zsh_plugins.txt" ~
+
+  # install utils
+  [ ! -d ~/.local/bin ] && mkdir -p ~/.local/bin
+  for file in ~/.config/zsh/utils; do
+    ln -sf "$file" ~/.local/bin
+  done
+
+  echo ">>> install zsh done"
+}
+
+install_vim() {
+  $SCRIPT_DIR/../UnixLike/PC/install vim
+}
+
+install_asdf() {
+  echo ">>> install asdf ..."
+  sudo pacman -S asdf-vm
+  echo ">>> install asdf done"
+}
+
+install_yazi() {
+  echo ">>> install yazi ..."
+  sudo pacman -S yazi ffmpeg 7zip jq poppler fd ripgrep fzf zoxide resvg imagemagick
+  echo ">>> install yazi done"
+}
+
+install_fontconfig() {
+  echo ">>> install fontconfig ..."
+
+  sudo pacman -S inter-font ttf-nerd-fonts-symbols-mono
+  paru -S otf-apple-pingfang ttf-apple-emoji ttf-maplemono-cn-unhinted
+
+  cp -r $SCRIPT_DIR/.config/fontconfig ~/.config/fontconfig
+
+  fc-cache -fv
+
+  echo ">>> install fontconfig done"
+}
+
+# -------------------- 入口 --------------------
+main "$@"

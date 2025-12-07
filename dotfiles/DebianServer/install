@@ -1,0 +1,92 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
+
+# -------------------- 参数解析 --------------------
+_pos=()
+
+usage() {
+  cat <<EOF
+Usage: $0 [OPTIONS] [POS...]
+  -h, --help    显示帮助并退出
+EOF
+  exit "${1:-0}"
+}
+
+while (($#)); do
+  case $1 in
+  -h | --help) usage 0 ;;
+  -*)
+    echo "ERROR: 未知选项 $1" >&2
+    usage 1
+    ;;
+  *) _pos+=("$1") ;;
+  esac
+  shift
+done
+
+# -------------------- main --------------------
+main() {
+  # 没有位置参数时给出提示
+  if ((${#_pos[@]} == 0)); then
+    usage 0
+  fi
+
+  # 遍历所有位置参数并调用对应函数
+  for cmd in "${_pos[@]}"; do
+    case "$cmd" in
+    zsh) install_zsh ;;
+    vim) install_vim ;;
+    *) echo "WARN: 未知命令 '$cmd'，已跳过" ;;
+    esac
+  done
+}
+
+# -------------------- 业务函数 --------------------
+install_all() {
+  install_basic_utils
+  install_vim
+  install_bash
+}
+
+install_basic_utils() {
+  echo ">>> install basic_utils ..."
+  sudo apt install -y 7zip jq bat fd-find ripgrep fzf zoxide
+  echo ">>> install basic_utils done"
+}
+
+install_vim() {
+  $SCRIPT_DIR/../UnixLike/Server/install vim
+}
+
+install_bash() {
+  echo ">>> install bash ..."
+
+  src_config_dir="$SCRIPT_DIR/.config/bash"
+  dst_config_dir="${XDG_CONFIG_HOME:-$HOME/.config}/bash"
+  [ ! -d $dst_config_dir ] && mkdir $dst_config_dir
+  cp -rfP $src_config_dir/* $dst_config_dir
+
+  cp "$SCRIPT_DIR/.bashrc" ~
+
+  echo ">>> install bash done"
+}
+
+install_asdf() {
+  echo ">>> install asdf ..."
+
+  # install asdf
+  TAG=$(curl -s https://api.github.com/repos/asdf-vm/asdf/releases/latest | jq -r .tag_name)
+
+  mkdir /tmp/asdf
+  curl -L "https://github.com/asdf-vm/asdf/releases/download/${TAG}/asdf-${TAG}-linux-amd64.tar.gz" | tar -xz -C /tmp/asdf
+
+  [ ! -d ~/.local/bin ] && mkdir -p ~/.local/bin
+  cp /tmp/asdf/asdf ~/.local/bin
+
+  echo ">>> install asdf done"
+}
+
+# -------------------- 入口 --------------------
+main "$@"

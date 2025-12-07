@@ -1,9 +1,4 @@
-if [ ! -e ~/.fzf ];then
-  git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
-  ~/.fzf/install
-fi
-
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+[ -f $HOME/.fzf.zsh ] && source $HOME/.fzf.zsh
 
 #export FZF_COMPLETION_TRIGGER='**'
 export FZF_DEFAULT_OPTS='--color=gutter:-1'
@@ -19,6 +14,14 @@ _fzf_complete_man() {
   _fzf_complete -1 -0 -- "$@" < <(echo $choice)
 }
 
+_fzf_complete_which() {
+  fzf_complete_cmd "which" "$@"
+}
+
+_fzf_complete_type() {
+  fzf_complete_cmd "type" "$@"
+}
+
 fzf_complete_cmd() {
   local prompt="$1"
   if [[ $# -gt 0 ]]; then
@@ -30,14 +33,5 @@ fzf_complete_cmd() {
     )
   _fzf_complete -1 -0 -- "$@" < <(echo $choice)
 }
-
-_fzf_complete_which() {
-  fzf_complete_cmd "which" "$@"
-}
-
-_fzf_complete_type() {
-  fzf_complete_cmd "type" "$@"
-}
-
 zle -N fzf_complete_cmd
 bindkey '^O' fzf_complete_cmd

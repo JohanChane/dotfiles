@@ -1,8 +1,8 @@
 # Basic Config
 
 # ## locale
-#export LANG=en_US.UTF-8
-#export LANGUAGE=en_US
+export LANG=en_US.UTF-8
+export LANGUAGE=en_US
 
 # ## Basic settings
 alias rm='rm -i'
@@ -23,3 +23,6 @@ alias diff='diff --color=auto'
 # ## Editor
 # 为 sudo 保留 EDITOR 环境变量。`Defaults  env_keep += "EDITOR"`
 export EDITOR='nvim'
+
+# ## Terminal
+export TERMINAL=kitty
