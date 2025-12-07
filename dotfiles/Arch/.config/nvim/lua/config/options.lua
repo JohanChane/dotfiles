@@ -5,6 +5,7 @@
 vim.g.maplocalleader = ";"
 vim.opt.clipboard = ""
 vim.opt.undofile = false
+vim.opt.wrap = true
 
 -- ========== 常用命令 ==========
 -- 删除行尾空格命令
