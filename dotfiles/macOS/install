@@ -84,7 +84,9 @@ install_fzf() {
 }
 
 install_vim() {
-  $SCRIPT_DIR/../UnixLike/PC/install vim
+  echo ">>> install vim ..."
+  cp -f $SCRIPT_DIR/../UnixLike/PC/.vimrc ~/.vimrc
+  echo ">>> install vim done"
 }
 
 install_asdf() {
