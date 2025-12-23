@@ -25,4 +25,4 @@ alias diff='diff --color=auto'
 export EDITOR='nvim'
 
 # ## Terminal
-export TERMINAL=kitty
+export TERMINAL=ghostty

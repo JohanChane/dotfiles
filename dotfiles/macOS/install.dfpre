@@ -9,7 +9,6 @@ install_all() {
 
 install_basic_utils() {
   brew install sevenzip jq fd ripgrep fzf zoxide
-  brew install vim neovim
 }
 
 install_zsh() {
@@ -17,9 +16,7 @@ install_zsh() {
 
   src_config_dir="$DF_SCRIPT_DIR/.config/zsh"
   dst_config_dir="${XDG_CONFIG_HOME:-$HOME/.config}/zsh"
-
-  [ ! -d $dst_config_dir ] && mkdir -p $dst_config_dir
-  cp -rfP $src_config_dir/* $dst_config_dir
+  df_cp_dir "$src_config_dir" "$dst_config_dir"
 
   cp "$DF_SCRIPT_DIR/.zshrc" ~
   cp "$DF_SCRIPT_DIR/.zprofile" ~
@@ -31,7 +28,17 @@ install_fzf() {
 }
 
 install_vim() {
-  cp -f $DF_SCRIPT_DIR/../UnixLike/PC/.vimrc ~/.vimrc
+  brew install vim
+
+  cp -f $DF_ROOT_DIR/dotfiles/UnixLike/PC/.vimrc ~/.vimrc
+}
+
+install_neovim() {
+  df_install_pkg_neovim
+
+  src_config_dir="$DF_ROOT_DIR/dotfiles/UnixLike/PC/.config/nvim"
+  dst_config_dir="${XDG_CONFIG_HOME:-$HOME/.config}/nvim"
+  df_cp_dir "$src_config_dir" "$dst_config_dir"
 }
 
 install_asdf() {

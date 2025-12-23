@@ -403,3 +403,8 @@ call plug#end()
 
 " ## vim-oscyank
 vmap Y <Plug>OSCYankVisual
+
+" ## ghostty
+let &t_SI = "\e[6 q"   " 插入模式下竖线
+let &t_EI = "\e[2 q"   " 普通模式下方块
+let &t_SR = "\e[4 q"   " 替换模式下下划线
