@@ -30,13 +30,13 @@ install_fzf() {
 install_vim() {
   brew install vim
 
-  cp -f $DF_ROOT_DIR/dotfiles/UnixLike/PC/.vimrc ~/.vimrc
+  cp -f $DF_SCRIPT_DIR/../UnixLike/PC/.vimrc ~/.vimrc
 }
 
 install_neovim() {
   df_install_pkg_neovim
 
-  src_config_dir="$DF_ROOT_DIR/dotfiles/UnixLike/PC/.config/nvim"
+  src_config_dir="$DF_SCRIPT_DIR/../UnixLike/PC/.config/nvim"
   dst_config_dir="${XDG_CONFIG_HOME:-$HOME/.config}/nvim"
   df_cp_dir "$src_config_dir" "$dst_config_dir"
 }
