@@ -1,0 +1,6 @@
+{
+  "files.associations": {
+    "*.dfpre": "shellscript",
+    "de_install": "shellscript"
+  }
+}

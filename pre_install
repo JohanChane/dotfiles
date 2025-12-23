@@ -1,0 +1,205 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
+
+# -------------------- 参数解析 --------------------
+_pos=()
+
+usage() {
+  cat <<EOF
+Usage: $0 [OPTIONS] [input.pre] [output]
+  根据 install.dfpre 和 install.template 生成 df_install 脚本
+
+Options:
+  -h, --help              显示帮助并退出
+  -t, --template FILE     指定模板文件 (默认: install_utils/install.template)
+  -a, --all               查找项目中所有 install.dfpre 并生成对应的 df_install
+  -c, --clean             删除项目中所有生成的 df_install 文件
+
+Arguments:
+  input.pre               install.dfpre 文件路径
+  output                  输出的 df_install 文件路径 (默认: 与 input.pre 同目录的 df_install)
+
+Examples:
+  $0 dotfiles/DebianDocker/install.dfpre
+  $0 dotfiles/DebianDocker/install.dfpre dotfiles/DebianDocker/df_install
+  $0 -t custom.template dotfiles/Arch/install.dfpre dotfiles/Arch/df_install
+  $0 --all
+  $0 --clean
+EOF
+  exit "${1:-0}"
+}
+
+TEMPLATE_FILE="$SCRIPT_DIR/install_utils/install.template"
+ALL_MODE=false
+CLEAN_MODE=false
+
+while (($#)); do
+  case $1 in
+  -h | --help) usage 0 ;;
+  -t | --template)
+    shift
+    TEMPLATE_FILE="$1"
+    ;;
+  -a | --all) ALL_MODE=true ;;
+  -c | --clean) CLEAN_MODE=true ;;
+  -*)
+    echo "ERROR: 未知选项 $1" >&2
+    usage 1
+    ;;
+  *) _pos+=("$1") ;;
+  esac
+  shift
+done
+
+# -------------------- main --------------------
+main() {
+  # --clean 模式：删除所有生成的 install 文件
+  if [[ "$CLEAN_MODE" == true ]]; then
+    clean_install_files
+    return
+  fi
+
+  # 检查模板文件是否存在
+  if [[ ! -f "$TEMPLATE_FILE" ]]; then
+    echo "ERROR: 模板文件不存在: $TEMPLATE_FILE" >&2
+    exit 1
+  fi
+
+  local install_pre_paths=()
+
+  # 收集需要处理的 install.dfpre 文件路径
+  if [[ "$ALL_MODE" == true ]]; then
+    # --all 模式：查找所有 install.dfpre 文件
+    while IFS= read -r -d '' file; do
+      install_pre_paths+=("$file")
+    done < <(find_all_install_pre)
+
+    if ((${#install_pre_paths[@]} == 0)); then
+      echo "未找到任何 install.dfpre 文件"
+      exit 0
+    fi
+
+    echo "找到 ${#install_pre_paths[@]} 个 install.dfpre 文件"
+  else
+    # 单文件模式
+    if ((${#_pos[@]} == 0)); then
+      echo "ERROR: 请提供 install.dfpre 文件路径，或使用 --all 处理所有文件" >&2
+      usage 1
+    fi
+
+    local input_pre="${_pos[0]}"
+
+    # 检查输入文件是否存在
+    if [[ ! -f "$input_pre" ]]; then
+      echo "ERROR: 输入文件不存在: $input_pre" >&2
+      exit 1
+    fi
+
+    install_pre_paths+=("$input_pre")
+  fi
+
+  # 处理所有文件
+  for input_pre in "${install_pre_paths[@]}"; do
+    local output_install
+
+    # 确定输出文件路径
+    if [[ "$ALL_MODE" == true ]]; then
+      # --all 模式：生成 df_install 文件
+      local dir="$(dirname "$input_pre")"
+      output_install="$dir/df_install"
+    elif ((${#_pos[@]} >= 2)); then
+      # 单文件模式且指定了输出路径
+      output_install="${_pos[1]}"
+    else
+      # 单文件模式默认输出路径
+      local dir="$(dirname "$input_pre")"
+      output_install="$dir/df_install"
+    fi
+
+    # 生成 install 脚本
+    generate_install "$input_pre" "$output_install" "$TEMPLATE_FILE"
+
+    # 设置可执行权限
+    chmod +x "$output_install"
+
+    echo "✓ 已生成: $output_install"
+  done
+}
+
+# -------------------- 业务函数 --------------------
+# 查找所有 install.dfpre 文件
+find_all_install_pre() {
+  local pre_files=()
+  while IFS= read -r -d '' file; do
+    pre_files+=("$file")
+  done < <(find "$SCRIPT_DIR/dotfiles" -type f -name "install.dfpre" -print0 2>/dev/null)
+
+  # 返回数组（通过 printf）
+  printf '%s\0' "${pre_files[@]}"
+}
+
+clean_install_files() {
+  echo ">>> 查找项目中所有 install.dfpre 对应的 df_install 文件..."
+
+  local install_files=()
+  local pre_files=()
+
+  # 使用统一的查找函数
+  while IFS= read -r -d '' pre_file; do
+    pre_files+=("$pre_file")
+    local dir="$(dirname "$pre_file")"
+    local install_file="$dir/df_install"
+    # 检查对应的 df_install 文件是否存在
+    if [[ -f "$install_file" ]]; then
+      install_files+=("$install_file")
+    fi
+  done < <(find_all_install_pre)
+
+  if ((${#install_files[@]} == 0)); then
+    echo "未找到任何 df_install 文件"
+    return
+  fi
+
+  echo "找到 ${#install_files[@]} 个 df_install 文件："
+  for file in "${install_files[@]}"; do
+    echo "  - $file"
+  done
+  echo ""
+
+  # 确认删除
+  read -p "确认删除这些文件吗？ (y/N): " -n 1 -r
+  echo
+  if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+    echo "已取消删除"
+    return
+  fi
+
+  # 删除文件
+  local deleted_count=0
+  for file in "${install_files[@]}"; do
+    if rm -f "$file"; then
+      echo "✓ 已删除: $file"
+      deleted_count=$((deleted_count + 1))
+    else
+      echo "✗ 删除失败: $file" >&2
+    fi
+  done
+
+  echo ""
+  echo "删除完成: 共删除 $deleted_count 个文件"
+}
+
+generate_install() {
+  local input_pre="$1"
+  local output_install="$2"
+  local template_file="$3"
+
+  # 读取模板文件，替换占位符 @df_include install_pre（支持一个或多个空格）
+  sed "/@df_include[[:space:]]\{1,\}install_pre/r $input_pre" "$template_file" |
+    sed '/@df_include[[:space:]]\{1,\}install_pre/d' >"$output_install"
+}
+
+# -------------------- 入口 --------------------
+main "$@"

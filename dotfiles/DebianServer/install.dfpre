@@ -1,0 +1,32 @@
+install_all() {
+  install_basic_utils
+  install_vim
+  install_bash
+
+  echo "Please run below commands:"
+  echo 'source ~/.bashrc; hash -r'
+}
+
+install_basic_utils() {
+  sudo apt install -y 7zip jq bat fd-find ripgrep fzf zoxide
+}
+
+install_vim() {  
+  $DF_SCRIPT_DIR/../UnixLike/Server/df_install vim
+}
+
+install_bash() {
+  src_config_dir="$DF_SCRIPT_DIR/.config/bash"
+  dst_config_dir="${XDG_CONFIG_HOME:-$HOME/.config}/bash"
+  df_cp_dir $src_config_dir $dst_config_dir
+
+  cp "$DF_SCRIPT_DIR/.bashrc" ~
+}
+
+install_asdf() {
+  df_install_pkg_asdf
+}
+
+install_yazi() {
+  df_install_pkg_yazi
+}

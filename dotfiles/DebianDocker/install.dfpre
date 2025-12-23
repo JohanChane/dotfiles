@@ -1,0 +1,54 @@
+
+install_all() {
+  install_basic_utils
+  install_vim
+  install_bash
+  install_fzf
+  install_tmux
+  
+  echo "Please run below commands:"
+  echo 'source ~/.bashrc; hash -r'
+}
+
+install_basic_utils() {
+  apt update
+  apt install sudo
+  sudo apt install -y 7zip jq bat fd-find ripgrep zoxide
+  sudo apt install vim net-tools clangd gdb
+}
+
+install_vim() {  
+  $DF_SCRIPT_DIR/../UnixLike/Server/df_install vim
+}
+
+install_bash() {
+  src_config_dir="$DF_SCRIPT_DIR/.config/bash"
+  dst_config_dir="${XDG_CONFIG_HOME:-$HOME/.config}/bash"
+  [ ! -d $dst_config_dir ] && mkdir -p $dst_config_dir
+  cp -rfP $src_config_dir/* $dst_config_dir
+
+  cp "$DF_SCRIPT_DIR/.bashrc" ~
+}
+
+install_fzf() {
+  df_install_pkg_fzf
+}
+
+install_tmux() {
+  ${DF_SCRIPT_DIR}/../UnixLike/Server/df_install tmux
+}
+
+install_asdf() {
+  ${DF_SCRIPT_DIR}/../UnixLike/Server/df_install asdf
+}
+
+install_lazygit() {
+  LAZYGIT_VERSION=$(curl -s "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | \grep -Po '"tag_name": *"v\K[^"]*')
+  curl -Lo lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/download/v${LAZYGIT_VERSION}/lazygit_${LAZYGIT_VERSION}_Linux_arm64.tar.gz"
+  tar xf lazygit.tar.gz lazygit
+  sudo install lazygit -D -t /usr/local/bin/
+}
+
+install_yazi() {
+  df_install_pkg_yazi
+}

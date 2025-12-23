@@ -1,4 +1,4 @@
-# Usage: fzf-find <dir>
+# Usage: fzf-find <query_str>
 function fzf-find {
   command fzf --ansi --query ${*:-""} \
     --preview "command bat -p --color=always {}" \
@@ -10,7 +10,7 @@ function fzf-find {
     | { read -r file && [ -n "$file" ] && $EDITOR "$file"; }
 }
 
-# Usage: fzf-grep <dir>
+# Usage: fzf-grep <regexp>
 function fzf-grep {
   command rg --color=always --line-number --no-heading --smart-case "${*:-}" \
     | command fzf -d':' --ansi \
@@ -29,4 +29,11 @@ function gitlog1 {
 }
 function gitlog2 {
   git log --graph --abbrev-commit --decorate --date=short --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ad)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(bold yellow)%d%C(reset)' ${*:-}
+}
+
+function docker-ls-volumes() {
+  for c in $(docker ps -aq); do
+      printf '\n=== %s ===\n' $(docker inspect -f '{{.Name}}' $c)
+      docker inspect -f '{{range .Mounts}}{{printf "%s:%s\n" .Source .Destination}}{{end}}' $c
+  done
 }

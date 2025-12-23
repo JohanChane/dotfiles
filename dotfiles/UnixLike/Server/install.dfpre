@@ -1,0 +1,21 @@
+install_all() {
+  install_basic_utils
+  install_vim
+}
+
+install_basic_utils() {
+  :
+}
+
+install_vim() {
+  [[ $EUID -ne 0 ]] && cp -f $DF_SCRIPT_DIR/.vimrc ~
+  sudo cp -f $DF_SCRIPT_DIR/.vimrc_root /root/.vimrc
+}
+
+install_tmux() {
+  apt install tmux
+
+  src_config_dir="$DF_SCRIPT_DIR/.config/tmux"
+  dst_config_dir="${XDG_CONFIG_HOME:-$HOME/.config}/tmux"
+  df_cp_dir $src_config_dir $dst_config_dir
+}

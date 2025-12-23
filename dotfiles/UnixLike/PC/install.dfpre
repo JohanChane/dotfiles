@@ -1,0 +1,13 @@
+install_all() {
+  install_basic_utils
+  install_vim
+}
+
+install_basic_utils() {
+  :
+}
+
+install_vim() {
+  [[ $EUID -ne 0 ]] && cp -f $DF_SCRIPT_DIR/.vimrc ~
+  sudo cp -f $DF_SCRIPT_DIR/.vimrc_root /root/.vimrc
+}
