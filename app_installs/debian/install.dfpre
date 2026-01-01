@@ -1,0 +1,52 @@
+source "$(df_app_install_dir)/../common/install.sh"
+
+install_pkg_basic_utils() {
+  sudo apt install -y 7zip jq bat fd-find ripgrep zoxide
+}
+
+install_pkg_vim() {
+  sudo apt install -y vim
+}
+
+install_pkg_neovim() {
+  sudo apt install -y neovim
+}
+
+if [ "$(df_detect_os)" == "debian13" ]; then
+install_pkg_fzf() {
+    sudo apt install -y fzf
+}
+fi
+
+install_pkg_asdf() {
+  # asdf python plugin
+  sudo apt update; sudo apt install make build-essential libssl-dev zlib1g-dev \
+libbz2-dev libreadline-dev libsqlite3-dev curl git \
+libncursesw5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev
+
+  # install asdf
+  TAG=$(curl -s https://api.github.com/repos/asdf-vm/asdf/releases/latest | jq -r .tag_name)
+
+  mkdir /tmp/asdf
+  curl -L "https://github.com/asdf-vm/asdf/releases/download/${TAG}/asdf-${TAG}-linux-amd64.tar.gz" | tar -xz -C /tmp/asdf
+
+  [ ! -d ~/.local/bin ] && mkdir -p ~/.local/bin
+  cp /tmp/asdf/asdf ~/.local/bin
+}
+
+install_pkg_yazi() {
+  sudo apt install ffmpeg 7zip jq poppler-utils fd-find ripgrep fzf zoxide imagemagick
+
+  # ## bin_url
+  local latest=$(curl -fsSL https://api.github.com/repos/sxyazi/yazi/releases/latest \
+              | grep -oP '"tag_name":\s*"v\K[^"]+')
+
+  local deb_url="https://github.com/sxyazi/yazi/releases/download/v${latest}/yazi-aarch64-unknown-linux-musl.deb"
+
+  # ## download and install deb
+  local tmpdir
+  tmpdir=$(mktemp -d)
+  curl -fsSL -o "${tmpdir}/yazi.deb" "$deb_url"
+  sudo dpkg -i --force-all "${tmpdir}/yazi.deb"
+  rm -rf "$tmpdir"
+}

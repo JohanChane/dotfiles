@@ -1,0 +1,82 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+DF_SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
+
+# 查找 git 项目根目录
+find_root_dir() {
+  local current_dir="$DF_SCRIPT_DIR"
+
+  # 向上查找 .git 目录
+  while [[ "$current_dir" != "/" ]]; do
+    if [[ -d "$current_dir/.git" ]]; then
+      echo "$current_dir"
+      return 0
+    fi
+    current_dir=$(dirname "$current_dir")
+  done
+
+  # 如果找不到 .git，输出错误
+  echo "ERROR: 无法找到 git 项目根目录" >&2
+  exit 1
+}
+
+DF_ROOT_DIR=$(find_root_dir)
+DF_LIB_DIR="$DF_ROOT_DIR/install_libs"
+
+source "$DF_LIB_DIR/install.sh"
+
+# -------------------- 参数解析 --------------------
+_pos=()
+
+usage() {
+  cat <<EOF
+Usage: $0 [OPTIONS] [POS...]
+  -h, --help    显示帮助并退出
+EOF
+
+  # 显示可用的安装命令
+  echo ""
+  echo "Available commands:"
+  grep -E '^install_[a-zA-Z_]+\(\)' "$0" | sed 's/^install_\([a-zA-Z_]*\)().*$/  - \1/'
+
+  exit "${1:-0}"
+}
+
+while (($#)); do
+  case $1 in
+  -h | --help) usage 0 ;;
+  -*)
+    echo "ERROR: 未知选项 $1" >&2
+    usage 1
+    ;;
+  *) _pos+=("$1") ;;
+  esac
+  shift
+done
+
+# -------------------- main --------------------
+main() {
+  # 没有位置参数时给出提示
+  if ((${#_pos[@]} == 0)); then
+    usage 0
+  fi
+
+  # 遍历所有位置参数并调用对应函数
+  for cmd in "${_pos[@]}"; do
+    func="install_$cmd"
+    if declare -F "$func" >/dev/null; then
+      echo ">>> start $cmd ..."
+      "$func"
+      echo ">>> install $cmd done"
+    else
+      echo "WARN: 未知命令 '$cmd'，已跳过"
+    fi
+  done
+}
+
+# -------------------- 业务函数 --------------------
+@df_include install_pre
+
+# -------------------- 入口 --------------------
+main "$@"

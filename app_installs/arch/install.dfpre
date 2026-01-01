@@ -1,0 +1,35 @@
+# source "$(df_app_install_dir)/../common/install.sh"
+
+_aur_helper='paru'
+
+install_pkg_basic_utils() {
+  sudo pacman -S curl git 7zip jq bat fd ripgrep fzf
+}
+
+install_pkg_vim() {
+  sudo pacman -S vim
+}
+
+install_pkg_neovim() {
+  sudo pacman -S ctags
+  sudo pacman -S neovim
+}
+
+install_pkg_zoxide() {
+  sudo pacman -S zoxide
+}
+
+install_pkg_asdf() {
+  sudo pacman -S asdf_vm
+
+  # asdf python plugin
+  sudo pacman -S --needed base-devel openssl zlib xz tk zstd
+}
+
+install_pkg_yazi() {
+  sudo pacman -S yazi ffmpeg 7zip jq poppler fd ripgrep fzf zoxide resvg imagemagick
+}
+
+install_pkg_lazygit() {
+  sudo pacman -S lazygit
+}

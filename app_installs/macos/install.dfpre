@@ -1,0 +1,9 @@
+install_pkg_vim() {
+  brew install vim
+}
+
+install_pkg_neovim() {
+  brew install universal-ctags
+  
+  brew install neovim
+}

@@ -1,54 +1,102 @@
+install_default() {
+  install_prepare
 
-install_all() {
   install_basic_utils
   install_vim
   install_bash
   install_fzf
-  install_tmux
+  install_zoxide
+  install_cpp_dev
   
   echo "Please run below commands:"
   echo 'source ~/.bashrc; hash -r'
 }
 
-install_basic_utils() {
-  apt update
-  apt install sudo
-  sudo apt install -y 7zip jq bat fd-find ripgrep zoxide
-  sudo apt install vim net-tools clangd gdb
+install_prepare() {
+  if df_is_root; then
+    apt update
+    apt install sudo
+  else
+    sudo apt update
+    sudo apt install sudo
+  fi
+  
+  sudo apt install -y curl git 7zip
+
+  # 设置时区
+  sudo ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+  sudo dpkg-reconfigure -f noninteractive tzdata
 }
 
-install_vim() {  
-  $DF_SCRIPT_DIR/../UnixLike/Server/df_install vim
+install_basic_utils() {
+  sudo apt install -y jq bat fd-find ripgrep
+  sudo apt install -y vim net-tools
 }
 
 install_bash() {
-  src_config_dir="$DF_SCRIPT_DIR/.config/bash"
-  dst_config_dir="${XDG_CONFIG_HOME:-$HOME/.config}/bash"
-  [ ! -d $dst_config_dir ] && mkdir -p $dst_config_dir
-  cp -rfP $src_config_dir/* $dst_config_dir
+  installer=$(df_dfinstall_path "$(df_app_cfg_dir)")
+  "$installer" cfg_bash
+}
 
-  cp "$DF_SCRIPT_DIR/.bashrc" ~
+install_vim() {
+  installer=$(df_dfinstall_path "$(df_app_install_dir)")
+  "installer" pkg_vim
+
+  installer=$(df_dfinstall_path "$(df_app_cfg_dir)")
+  "$installer" cfg_vim
+}
+
+install_neovim() {
+  installer=$(df_dfinstall_path "$(df_app_install_dir)")
+  "installer" pkg_neovim
+
+  installer=$(df_dfinstall_path "$(df_app_cfg_dir)")
+  "installer" cfg_neovim_lazyvim
 }
 
 install_fzf() {
-  df_install_pkg_fzf
+  installer=$(df_dfinstall_path "$(df_app_install_dir)")
+  "$installer" pkg_fzf
+
+  installer=$(df_dfinstall_path "$(df_app_cfg_dir)")
+  "$installer" cfg_fzf_bash
 }
 
-install_tmux() {
-  ${DF_SCRIPT_DIR}/../UnixLike/Server/df_install tmux
+install_zoxide() {
+  sudo apt install -y zoxide
+
+  installer=$(df_dfinstall_path "$(df_app_cfg_dir)")
+  "$installer" cfg_zoxide_bash
 }
 
 install_asdf() {
-  ${DF_SCRIPT_DIR}/../UnixLike/Server/df_install asdf
+  installer=$(df_dfinstall_path "$(df_app_install_dir)")
+  "$installer" pkg_asdf
+
+  installer=$(df_dfinstall_path "$(df_app_cfg_dir)")
+  "$installer" cfg_asdf_bash
 }
 
 install_lazygit() {
-  LAZYGIT_VERSION=$(curl -s "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | \grep -Po '"tag_name": *"v\K[^"]*')
-  curl -Lo lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/download/v${LAZYGIT_VERSION}/lazygit_${LAZYGIT_VERSION}_Linux_arm64.tar.gz"
-  tar xf lazygit.tar.gz lazygit
-  sudo install lazygit -D -t /usr/local/bin/
+  installer=$(df_dfinstall_path "$(df_app_install_dir)")
+  "$installer" pkg_lazygit
 }
 
 install_yazi() {
-  df_install_pkg_yazi
+  installer=$(df_dfinstall_path "$(df_app_install_dir)")
+  "$installer" pkg_yazi
+  
+  installer=$(df_dfinstall_path "$(df_app_cfg_dir)")
+  "$installer" cfg_yazi_bash
+}
+
+install_tmux() {
+  sudo apt install -y tmux
+
+  installer=$(df_dfinstall_path "$(df_app_cfg_dir)")
+  "$installer" cfg_tmux_bash
+}
+
+install_cpp_dev() {
+  sudo apt install -y gdb clangd
 }

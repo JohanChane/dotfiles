@@ -1,0 +1,12 @@
+# keymap.toml
+[mgr]
+prepend_keymap = [
+	# Goto
+	{ on = [ "g", "m", "/" ],       run = "cd ~/My",                  desc = "Go ~/My" },
+	{ on = [ "g", "w", "/" ],       run = "cd ~/My/Workspace",        desc = "Go ~/My/Workspace" },
+	{ on = [ "g", "s", "/" ],       run = "cd ~/My/Workspace/Src",    desc = "Go ~/My/Workspace/Src" },
+	{ on = [ "g", "s", "s" ],       run = "cd ~/My/Workspace/Src/WorkProject/device-simulator",   desc = "Go device-simulator" },
+]
+append_keymap = [
+	# ...
+]

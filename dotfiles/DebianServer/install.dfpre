@@ -1,32 +1,76 @@
-install_all() {
+install_default() {
+  install_prepare
+
   install_basic_utils
   install_vim
   install_bash
-
+  install_fzf
+  install_zoxide
+  install_cpp_dev
+  
   echo "Please run below commands:"
   echo 'source ~/.bashrc; hash -r'
 }
 
-install_basic_utils() {
-  sudo apt install -y 7zip jq bat fd-find ripgrep fzf zoxide
+install_prepare() {
+  if df_is_root; then
+    apt update
+    apt install sudo
+  else
+    sudo apt update
+    sudo apt install sudo
+  fi
+  
+  sudo apt install -y curl git 7zip
 }
 
-install_vim() {  
-  $DF_SCRIPT_DIR/../UnixLike/Server/df_install vim
+_install_debian_docker_helper() {
+  $install_pos=$1
+
+  installer=$(df_dfinstall_path "$(df_dotfile_dir debian_docker_df)")
+  "$installer" $1
+}
+
+install_basic_utils() {
+  _install_debian_docker_helper basic_utils
 }
 
 install_bash() {
-  src_config_dir="$DF_SCRIPT_DIR/.config/bash"
-  dst_config_dir="${XDG_CONFIG_HOME:-$HOME/.config}/bash"
-  df_cp_dir $src_config_dir $dst_config_dir
+  _install_debian_docker_helper bash
+}
 
-  cp "$DF_SCRIPT_DIR/.bashrc" ~
+install_vim() {
+  _install_debian_docker_helper vim
+}
+
+install_neovim() {
+  _install_debian_docker_helper neovim
+}
+
+install_fzf() {
+  _install_debian_docker_helper fzf
+}
+
+install_zoxide() {
+  _install_debian_docker_helper zoxide
 }
 
 install_asdf() {
-  df_install_pkg_asdf
+  _install_debian_docker_helper asdf
+}
+
+install_lazygit() {
+  _install_debian_docker_helper lazygit
 }
 
 install_yazi() {
-  df_install_pkg_yazi
+  _install_debian_docker_helper yazi
+}
+
+install_tmux() {
+  _install_debian_docker_helper tmux
+}
+
+install_cpp_dev() {
+  _install_debian_docker_helper cpp_dev
 }

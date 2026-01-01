@@ -7,3 +7,4 @@ fi
 
 # # customize
 source ~/.config/zsh/config.zsh
+export -U PATH

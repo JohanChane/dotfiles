@@ -1,66 +1,90 @@
-install_all() {
+_aur_helper='paru'
+
+install_default() {
+  install_prepare
   install_basic_utils
+  install_fontconfig
   install_vim
+  install_neovim
   install_zsh
   install_asdf
   install_yazi
+  install_lazygit
+}
+
+install_prepare() {
+  if df_is_root; then
+    pacman install sudo
+  elif ! command -v sudo &> /dev/null; then
+    echo "Please install 'sudo' first."
+    exit 1
+  fi
+
+  echo "假设你已经配置好 pacman 的 multilib 和 archlinuxcn 源"
+
+  sudo pacman -S paru
 }
 
 install_basic_utils() {
-  echo ">>> install basic utils ..."
-  sudo pacman -S 7zip jq bat fd ripgrep fzf zoxide
-  sudo pacman -S vim neovim
-  echo ">>> install basic utils done"
+  installer=$(df_dfinstall_path "$(df_app_install_dir)")
+  "$installer" pkg_basic_utils
+}
+
+install_fontconfig() {
+  sudo pacman -S inter-font ttf-nerd-fonts-symbols-mono
+  $_aur_helper -S otf-apple-pingfang ttf-apple-emoji ttf-maplemono-cn-unhinted
+
+  cp -r $DF_SCRIPT_DIR/.config/fontconfig ~/.config/fontconfig
+
+  fc-cache -fv
 }
 
 install_zsh() {
-  echo ">>> install zsh ..."
-  paru -S zsh-antidote
+  $_aur_helper -S zsh-antidote
 
-  src_config_dir="$DF_SCRIPT_DIR/.config/zsh"
+  dotfile_dir="$(df_dotfile_dir arch_df)"
+  src_config_dir="$dotfile_dir/.config/zsh"
   dst_config_dir="${XDG_CONFIG_HOME:-$HOME/.config}/zsh"
+  df_cp_dir "$src_config_dir" "$dst_config_dir"
 
-  [ ! -d $dst_config_dir ] && mkdir -p $dst_config_dir
-  cp -rfP $src_config_dir/* $dst_config_dir
-
-  cp "$DF_SCRIPT_DIR/.zshrc" ~
-  cp "$DF_SCRIPT_DIR/.zprofile" ~
-  cp "$DF_SCRIPT_DIR/.zsh_plugins.txt" ~
+  cp "$dotfile_dir/.zshrc" ~
+  cp "$dotfile_dir/.zprofile" ~
+  cp "$dotfile_dir/.zsh_plugins.txt" ~
 
   # install utils
   [ ! -d ~/.local/bin ] && mkdir -p ~/.local/bin
   for file in ~/.config/zsh/utils; do
     ln -sf "$file" ~/.local/bin
   done
-
-  echo ">>> install zsh done"
 }
 
 install_vim() {
-  $DF_SCRIPT_DIR/../UnixLike/PC/df_install vim
+  installer=$(df_dfinstall_path "$(df_app_install_dir)")
+  "$installer" pkg_vim
+
+  installer=$(df_dfinstall_path "$(df_app_cfg_dir)")
+  "$installer" cfg_vim
+}
+
+install_neovim() {
+  installer=$(df_dfinstall_path "$(df_app_install_dir)")
+  "$installer" pkg_neovim
+
+  installer=$(df_dfinstall_path "$(df_app_cfg_dir)")
+  "$installer" cfg_neovim_lazyvim
 }
 
 install_asdf() {
-  echo ">>> install asdf ..."
-  sudo pacman -S asdf-vm
-  echo ">>> install asdf done"
+  installer=$(df_dfinstall_path "$(df_app_install_dir)")
+  "$installer" pkg_asdf
 }
 
 install_yazi() {
-  echo ">>> install yazi ..."
-  sudo pacman -S yazi ffmpeg 7zip jq poppler fd ripgrep fzf zoxide resvg imagemagick
-  echo ">>> install yazi done"
+  installer=$(df_dfinstall_path "$(df_app_install_dir)")
+  "$installer" pkg_yazi
 }
 
-install_fontconfig() {
-  echo ">>> install fontconfig ..."
-
-  sudo pacman -S inter-font ttf-nerd-fonts-symbols-mono
-  paru -S otf-apple-pingfang ttf-apple-emoji ttf-maplemono-cn-unhinted
-
-  cp -r $DF_SCRIPT_DIR/.config/fontconfig ~/.config/fontconfig
-
-  fc-cache -fv
-
-  echo ">>> install fontconfig done"
+install_lazygit() {
+  installer=$(df_dfinstall_path "$(df_app_install_dir)")
+  "$installer" pkg_lazygit
 }

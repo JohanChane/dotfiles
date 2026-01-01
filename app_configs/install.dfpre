@@ -1,0 +1,170 @@
+# ## bash
+install_cfg_bash() {
+  local src_config_dir="$(df_app_cfg_dir)/bash"
+  local dst_config_dir="${XDG_CONFIG_HOME:-$HOME/.config}/bash"
+
+  mkdir -p "$dst_config_dir/configs"
+  cp -f "$src_config_dir/configs/basic.bash" "$dst_config_dir/configs/"
+  cp -f "$src_config_dir/configs/utils.bash" "$dst_config_dir/configs/"
+
+  cat > "$dst_config_dir/config.bash" <<'EOF'
+source ~/.config/bash/configs/basic.bash
+source ~/.config/bash/configs/utils.bash
+EOF
+
+  cp -f "$src_config_dir/bashrc" ~/.bashrc
+}
+
+# ## zsh
+install_cfg_zsh() {
+  local src_config_dir="$(df_app_cfg_dir)/bash"
+  local dst_config_dir="${XDG_CONFIG_HOME:-$HOME/.config}/zsh"
+
+  mkdir -p "$dst_config_dir/configs"
+  cp -f "$src_config_dir/configs/basic.zsh" "$dst_config_dir/configs/"
+  cp -f "$src_config_dir/configs/myzsh.zsh" "$dst_config_dir/configs/"
+
+  cat > "$dst_config_dir/config.zsh" <<'EOF'
+source ~/.config/zsh/configs/basic.bash
+source ~/.config/zsh/configs/myzsh.bash
+source ~/.config/zsh/configs/utils.bash
+EOF
+}
+
+# ## vim
+install_cfg_vim() {
+  true > ~/.vimrc
+
+  cat "$(df_app_cfg_dir)/vim/basic.vim" >> ~/.vimrc
+  echo "" >> ~/.vimrc
+  cat "$(df_app_cfg_dir)/vim/my.vim" >> ~/.vimrc
+
+  if ! df_is_root && [ "$(df_detect_os)" != "macos" ]; then
+    local tmpdir
+    tmpdir=$(mktemp -d)
+
+    cat "$(df_app_cfg_dir)/vim/basic.vim" >> $tmpdir/.vimrc
+    echo "" >> $tmpdir/.vimrc
+    cat "$(df_app_cfg_dir)/vim/my.vim" >> $tmpdir/.vimrc
+
+    sudo cp -f $tmpdir/.vimrc /root/.vimrc
+    rm -rf $tmpdir
+  fi
+}
+
+# ## neovim
+_install_cfg_neovim() {
+  cfg_type=$1
+
+  if [ "$cfg_type" = "lazyvim" ]; then
+    src_config_dir="$(df_app_cfg_dir)/neovim/lazyvim"
+  elif [ "$cfg_type" = "basic" ]; then
+    src_config_dir="$(df_app_cfg_dir)/neovim/basic"
+  fi
+  
+  dst_config_dir="${XDG_CONFIG_HOME:-$HOME/.config}/nvim"
+  df_cp_dir "$src_config_dir" "$dst_config_dir"
+}
+
+install_cfg_neovim_basic() {
+  _install_cfg_neovim "basic"
+}
+
+install_cfg_neovim_lazyvim() {
+  _install_cfg_neovim "lazyvim"
+}
+
+
+
+# ## install_shell_cfg
+# Usage: func <app_name> <shell_name>
+_install_shell_cfg() {
+  app_name=$1
+  shell_name=$2
+  
+  src_config_path="$(df_app_cfg_dir)/${app_name}/config.sh"
+  if [ $shell_name = "bash" ]; then
+    shell_cfg_dir="${XDG_CONFIG_HOME:-$HOME/.config}/bash"
+    dst_config_path="$shell_cfg_dir/configs/${app_name}.bash"
+    shell_cfg_path="$shell_cfg_dir/config.bash"
+  elif [ $shell_name = "zsh" ]; then
+    shell_cfg_dir="${XDG_CONFIG_HOME:-$HOME/.config}/zsh"
+    dst_config_path="$shell_cfg_dir/configs/${app_name}.zsh"
+    shell_cfg_path="$shell_cfg_dir/config.zsh"
+  fi 
+
+  cp -f "$src_config_path" "$dst_config_path"
+
+  echo -e "\nsource $dst_config_path" >> "$shell_cfg_path"
+}
+
+# ## fzf
+install_cfg_fzf_bash() {
+  _install_shell_cfg "fzf" "bash"
+}
+
+install_cfg_fzf_zsh() {
+  _install_shell_cfg "fzf" "zsh"
+}
+
+# ## zoxide
+install_cfg_zoxide_bash() {
+  _install_shell_cfg "zoxide" "bash"
+}
+
+install_cfg_zoxide_zsh() {
+  _install_shell_cfg "zoxide" "zsh"
+}
+
+# ## asdf
+# Usage: func <shell_name>
+install_cfg_asdf_bash() {
+  _install_shell_cfg "asdf" "bash"
+}
+
+install_cfg_asdf_zsh() {
+  _install_shell_cfg "asdf" "zsh"
+}
+
+# ## yazi
+install_cfg_yazi_bash() {
+  _install_shell_cfg "yazi" "bash"
+}
+
+install_cfg_yazi_zsh() {
+  _install_shell_cfg "yazi" "zsh"
+}
+
+# ## tmux
+_install_cfg_tmux() {
+  src_config_path="$(df_app_cfg_dir)/tmux/tmux.conf"
+  dst_config_path="${XDG_CONFIG_HOME:-$HOME/.config}/tmux/tmux.conf"
+  [ -d "$(dirname "$dst_config_path")" ] || mkdir -p "$(dirname "$dst_config_path")"
+  cp -f "$src_config_path" "$dst_config_path"
+}
+
+install_cfg_tmux_bash() {
+  _install_cfg_tmux
+
+  _install_shell_cfg "tmux" "bash"
+}
+
+install_cfg_tmux_zsh() {
+  _install_cfg_tmux
+  
+  _install_shell_cfg "tmux" "zsh"
+}
+
+# ## antidote
+install_cfg_antidote() {
+  cp -f "$(df_app_cfg_dir)/antidote/antidote.sh" "${XDG_CONFIG_HOME:-$HOME/.config}/zsh/configs/antidote.zsh"
+  cp -f "$(df_app_cfg_dir)/antidote/zsh_plugins.txt" ~/.zsh_plugins.txt
+
+  local tmpdir
+  tmpdir=$(mktemp -d)
+  touch $tmpdir/zshrc
+  cat "$(df_app_cfg_dir)/antidote/powerlevel10k.sh" >> $tmpdir/zshrc
+  cat ~/.zshrc >> $tmpdir/zshrc
+  df_backup ~/.zshrc
+  cat "$tmpdir/zshrc" > ~/.zshrc
+}

@@ -13,7 +13,7 @@ Usage: $0 [OPTIONS] [input.pre] [output]
 
 Options:
   -h, --help              显示帮助并退出
-  -t, --template FILE     指定模板文件 (默认: install_utils/install.template)
+  -t, --template FILE     指定模板文件 (默认: install_templates/install.template)
   -a, --all               查找项目中所有 install.dfpre 并生成对应的 df_install
   -c, --clean             删除项目中所有生成的 df_install 文件
 
@@ -31,7 +31,7 @@ EOF
   exit "${1:-0}"
 }
 
-TEMPLATE_FILE="$SCRIPT_DIR/install_utils/install.template"
+TEMPLATE_FILE="$SCRIPT_DIR/install_templates/install.template"
 ALL_MODE=false
 CLEAN_MODE=false
 
@@ -134,7 +134,7 @@ find_all_install_pre() {
   local pre_files=()
   while IFS= read -r -d '' file; do
     pre_files+=("$file")
-  done < <(find "$SCRIPT_DIR/dotfiles" -type f -name "install.dfpre" -print0 2>/dev/null)
+  done < <(find "$SCRIPT_DIR" -type f -name "install.dfpre" -print0 2>/dev/null)
 
   # 返回数组（通过 printf）
   printf '%s\0' "${pre_files[@]}"

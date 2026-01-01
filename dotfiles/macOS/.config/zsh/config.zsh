@@ -8,9 +8,7 @@ source ~/.config/zsh/configs/file_mgr.zsh
 source ~/.config/zsh/configs/theme.zsh
 
 source ~/.config/zsh/configs/asdf.zsh
-
+source ~/.config/zsh/configs/tmux.zsh
 source ~/.config/zsh/configs/utils.zsh
 
 source ~/.config/zsh/configs/temp.zsh
-
-export -U PATH

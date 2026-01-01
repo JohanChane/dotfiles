@@ -1,0 +1,7 @@
+source ~/.config/bash/config.bash
+
+dedup_path() {
+    PATH=$(printf '%s\n' "${PATH//:/$'\n'}" | awk '!seen[$0]++' | paste -sd:)
+    export PATH
+}
+dedup_path
