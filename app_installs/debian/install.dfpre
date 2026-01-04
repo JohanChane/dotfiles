@@ -35,6 +35,7 @@ libncursesw5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-d
 }
 
 install_pkg_yazi() {
+  sudo apt install file xclip
   sudo apt install ffmpeg 7zip jq poppler-utils fd-find ripgrep fzf zoxide imagemagick
 
   # ## bin_url
