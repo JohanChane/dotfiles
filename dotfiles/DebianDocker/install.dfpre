@@ -40,7 +40,7 @@ install_bash() {
 
 install_vim() {
   installer=$(df_dfinstall_path "$(df_app_install_dir)")
-  "installer" pkg_vim
+  "$installer" pkg_vim
 
   installer=$(df_dfinstall_path "$(df_app_cfg_dir)")
   "$installer" cfg_vim
@@ -48,10 +48,10 @@ install_vim() {
 
 install_neovim() {
   installer=$(df_dfinstall_path "$(df_app_install_dir)")
-  "installer" pkg_neovim
+  "$installer" pkg_neovim
 
   installer=$(df_dfinstall_path "$(df_app_cfg_dir)")
-  "installer" cfg_neovim_lazyvim
+  "$installer" cfg_neovim_lazyvim
 }
 
 install_fzf() {
