@@ -96,5 +96,13 @@ df_backup() {
   done
 }
 
+df_sudo() {
+  if df_is_root; then
+    echo ""
+  else
+    echo "sudo"
+  fi
+}
+
 # ## source paths
 source "$DF_LIB_DIR/paths.sh"

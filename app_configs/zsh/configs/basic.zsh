@@ -19,10 +19,3 @@ alias egrep='egrep --color=auto'
 alias fgrep='fgrep --color=auto'
 
 alias diff='diff --color=auto'
-
-# ## Editor
-# 为 sudo 保留 EDITOR 环境变量。`Defaults  env_keep += "EDITOR"`
-export EDITOR='nvim'
-
-# ## Terminal
-export TERMINAL=ghostty

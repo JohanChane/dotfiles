@@ -1,6 +1,6 @@
 # ## bash
 install_cfg_bash() {
-  local src_config_dir="$(df_app_cfg_dir)/bash"
+  local src_config_dir="$DF_CFGINSTALL_DIR/bash"
   local dst_config_dir="${XDG_CONFIG_HOME:-$HOME/.config}/bash"
 
   mkdir -p "$dst_config_dir/configs"
@@ -17,35 +17,38 @@ EOF
 
 # ## zsh
 install_cfg_zsh() {
-  local src_config_dir="$(df_app_cfg_dir)/bash"
+  local src_config_dir="$DF_CFGINSTALL_DIR/zsh"
   local dst_config_dir="${XDG_CONFIG_HOME:-$HOME/.config}/zsh"
 
   mkdir -p "$dst_config_dir/configs"
   cp -f "$src_config_dir/configs/basic.zsh" "$dst_config_dir/configs/"
   cp -f "$src_config_dir/configs/myzsh.zsh" "$dst_config_dir/configs/"
+  cp -f "$src_config_dir/configs/utils.zsh" "$dst_config_dir/configs/"
 
   cat > "$dst_config_dir/config.zsh" <<'EOF'
-source ~/.config/zsh/configs/basic.bash
-source ~/.config/zsh/configs/myzsh.bash
-source ~/.config/zsh/configs/utils.bash
+source ~/.config/zsh/configs/basic.zsh
+source ~/.config/zsh/configs/myzsh.zsh
+source ~/.config/zsh/configs/utils.zsh
 EOF
+
+  cp -f "$src_config_dir/zshrc" ~/.zshrc
 }
 
 # ## vim
 install_cfg_vim() {
   true > ~/.vimrc
 
-  cat "$(df_app_cfg_dir)/vim/basic.vim" >> ~/.vimrc
+  cat "$DF_CFGINSTALL_DIR/vim/basic.vim" >> ~/.vimrc
   echo "" >> ~/.vimrc
-  cat "$(df_app_cfg_dir)/vim/my.vim" >> ~/.vimrc
+  cat "$DF_CFGINSTALL_DIR/vim/my.vim" >> ~/.vimrc
 
   if ! df_is_root && [ "$(df_detect_os)" != "macos" ]; then
     local tmpdir
     tmpdir=$(mktemp -d)
 
-    cat "$(df_app_cfg_dir)/vim/basic.vim" >> $tmpdir/.vimrc
+    cat "$DF_CFGINSTALL_DIR/vim/basic.vim" >> $tmpdir/.vimrc
     echo "" >> $tmpdir/.vimrc
-    cat "$(df_app_cfg_dir)/vim/my.vim" >> $tmpdir/.vimrc
+    cat "$DF_CFGINSTALL_DIR/vim/my.vim" >> $tmpdir/.vimrc
 
     sudo cp -f $tmpdir/.vimrc /root/.vimrc
     rm -rf $tmpdir
@@ -57,9 +60,9 @@ _install_cfg_neovim() {
   cfg_type=$1
 
   if [ "$cfg_type" = "lazyvim" ]; then
-    src_config_dir="$(df_app_cfg_dir)/neovim/lazyvim"
+    src_config_dir="$DF_CFGINSTALL_DIR/neovim/lazyvim"
   elif [ "$cfg_type" = "basic" ]; then
-    src_config_dir="$(df_app_cfg_dir)/neovim/basic"
+    src_config_dir="$DF_CFGINSTALL_DIR/neovim/basic"
   fi
   
   dst_config_dir="${XDG_CONFIG_HOME:-$HOME/.config}/nvim"
@@ -74,15 +77,18 @@ install_cfg_neovim_lazyvim() {
   _install_cfg_neovim "lazyvim"
 }
 
-
-
 # ## install_shell_cfg
 # Usage: func <app_name> <shell_name>
 _install_shell_cfg() {
   app_name=$1
   shell_name=$2
   
-  src_config_path="$(df_app_cfg_dir)/${app_name}/config.sh"
+  if [ -f "$DF_CFGINSTALL_DIR/${app_name}/config.$shell_name" ]; then
+    src_config_path="$DF_CFGINSTALL_DIR/${app_name}/config.$shell_name"
+  else
+    src_config_path="$DF_CFGINSTALL_DIR/${app_name}/config.sh"
+  fi
+
   if [ $shell_name = "bash" ]; then
     shell_cfg_dir="${XDG_CONFIG_HOME:-$HOME/.config}/bash"
     dst_config_path="$shell_cfg_dir/configs/${app_name}.bash"
@@ -137,7 +143,7 @@ install_cfg_yazi_zsh() {
 
 # ## tmux
 _install_cfg_tmux() {
-  src_config_path="$(df_app_cfg_dir)/tmux/tmux.conf"
+  src_config_path="$DF_CFGINSTALL_DIR/tmux/tmux.conf"
   dst_config_path="${XDG_CONFIG_HOME:-$HOME/.config}/tmux/tmux.conf"
   [ -d "$(dirname "$dst_config_path")" ] || mkdir -p "$(dirname "$dst_config_path")"
   cp -f "$src_config_path" "$dst_config_path"
@@ -157,14 +163,34 @@ install_cfg_tmux_zsh() {
 
 # ## antidote
 install_cfg_antidote() {
-  cp -f "$(df_app_cfg_dir)/antidote/antidote.sh" "${XDG_CONFIG_HOME:-$HOME/.config}/zsh/configs/antidote.zsh"
-  cp -f "$(df_app_cfg_dir)/antidote/zsh_plugins.txt" ~/.zsh_plugins.txt
+  dst_config_path="${XDG_CONFIG_HOME:-$HOME/.config}/zsh/configs/plug_mgr.zsh"
+  [ -d "$(dirname "$dst_config_path")" ] || mkdir -p "$(dirname "$dst_config_path")"
+  cp -f "$DF_CFGINSTALL_DIR/antidote/config.zsh" "$dst_config_path"
+  cp -f "$DF_CFGINSTALL_DIR/antidote/zsh_plugins.txt" ~/.zsh_plugins.txt
 
-  local tmpdir
-  tmpdir=$(mktemp -d)
-  touch $tmpdir/zshrc
-  cat "$(df_app_cfg_dir)/antidote/powerlevel10k.sh" >> $tmpdir/zshrc
-  cat ~/.zshrc >> $tmpdir/zshrc
-  df_backup ~/.zshrc
-  cat "$tmpdir/zshrc" > ~/.zshrc
+  echo -e "\nsource $dst_config_path" >> "${XDG_CONFIG_HOME:-$HOME/.config}/zsh/config.zsh"
+}
+
+# theme powerlevel10k
+install_cfg_p10k() {
+  src_config_path="$DF_CFGINSTALL_DIR/p10k/config.zsh"
+  dst_config_path="${XDG_CONFIG_HOME:-$HOME/.config}/zsh/configs/theme.zsh"
+  [ -d "$(dirname "$dst_config_path")" ] || mkdir -p "$(dirname "$dst_config_path")"
+  cp -f "$src_config_path" "$dst_config_path"
+
+  echo -e "\nsource $dst_config_path" >> "${XDG_CONFIG_HOME:-$HOME/.config}/zsh/config.zsh"
+}
+
+# theme pure
+install_cfg_pure() {
+  src_config_path="$DF_CFGINSTALL_DIR/pure/config.zsh"
+  dst_config_path="${XDG_CONFIG_HOME:-$HOME/.config}/zsh/configs/theme.zsh"
+  [ -d "$(dirname "$dst_config_path")" ] || mkdir -p "$(dirname "$dst_config_path")"
+  cp -f "$src_config_path" "$dst_config_path"
+
+  echo -e "\nsource $dst_config_path" >> "${XDG_CONFIG_HOME:-$HOME/.config}/zsh/config.zsh"
+}
+
+install_cfg_zsh_theme() {
+  install_cfg_pure
 }

@@ -1,4 +1,4 @@
-source "$(df_app_install_dir)/../common/install.sh"
+source "$DF_APPINSTALL_DIR/../common/install.sh"
 
 install_pkg_basic_utils() {
   sudo apt install -y 7zip jq bat fd-find ripgrep zoxide

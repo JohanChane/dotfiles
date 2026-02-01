@@ -1,4 +1,4 @@
-# source "$(df_app_install_dir)/../common/install.sh"
+# source "$DF_APP_INSTALLER/../common/install.sh"
 
 _aur_helper='paru'
 

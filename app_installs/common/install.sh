@@ -39,3 +39,9 @@ install_pkg_lazygit() {
   sudo install -m 755 "$tmpdir/lazygit" /usr/local/bin
   rm -rf "$tmpdir"
 }
+
+install_pkg_antidote() {
+  [ -d "${ZDOTDIR:-$HOME}/.antidote" ] && return
+
+  git clone --depth=1 https://github.com/mattmc3/antidote.git ${ZDOTDIR:-$HOME}/.antidote
+}

@@ -32,19 +32,14 @@ install_zsh() {
 }
 
 install_vim() {
-  installer=$(df_dfinstall_path "$(df_app_install_dir)")
-  "$installer" pkg_vim
+  "$DF_APP_INSTALLER" pkg_vim
 
-  installer=$(df_dfinstall_path "$(df_app_cfg_dir)")
-  "$installer" cfg_vim
+  "$DF_CFG_INSTALLER" cfg_vim
 }
 
 install_neovim() {
-  installer=$(df_dfinstall_path "$(df_app_install_dir)")
-  "$installer" pkg_neovim
-
-  installer=$(df_dfinstall_path "$(df_app_cfg_dir)")
-  "$installer" cfg_neovim_lazyvim
+  "$DF_APP_INSTALLER" pkg_neovim
+  "$DF_CFG_INSTALLER" cfg_neovim_lazyvim
 }
 
 install_fzf() {

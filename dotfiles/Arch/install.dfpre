@@ -26,8 +26,7 @@ install_prepare() {
 }
 
 install_basic_utils() {
-  installer=$(df_dfinstall_path "$(df_app_install_dir)")
-  "$installer" pkg_basic_utils
+  "$DF_APP_INSTALLER" pkg_basic_utils
 }
 
 install_fontconfig() {
@@ -59,32 +58,25 @@ install_zsh() {
 }
 
 install_vim() {
-  installer=$(df_dfinstall_path "$(df_app_install_dir)")
-  "$installer" pkg_vim
+  "$DF_APP_INSTALLER" pkg_vim
 
-  installer=$(df_dfinstall_path "$(df_app_cfg_dir)")
-  "$installer" cfg_vim
+  "$DF_CFG_INSTALLER" cfg_vim
 }
 
 install_neovim() {
-  installer=$(df_dfinstall_path "$(df_app_install_dir)")
-  "$installer" pkg_neovim
+  "$DF_APP_INSTALLER" pkg_neovim
 
-  installer=$(df_dfinstall_path "$(df_app_cfg_dir)")
-  "$installer" cfg_neovim_lazyvim
+  "$DF_CFG_INSTALLER" cfg_neovim_lazyvim
 }
 
 install_asdf() {
-  installer=$(df_dfinstall_path "$(df_app_install_dir)")
-  "$installer" pkg_asdf
+  "$DF_APP_INSTALLER" pkg_asdf
 }
 
 install_yazi() {
-  installer=$(df_dfinstall_path "$(df_app_install_dir)")
-  "$installer" pkg_yazi
+  "$DF_APP_INSTALLER" pkg_yazi
 }
 
 install_lazygit() {
-  installer=$(df_dfinstall_path "$(df_app_install_dir)")
-  "$installer" pkg_lazygit
+  "$DF_APP_INSTALLER" pkg_lazygit
 }

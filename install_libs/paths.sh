@@ -32,10 +32,6 @@ df_app_install_dir() {
   echo "${_DF_PATHS[app_insts]}"
 }
 
-df_app_cfg_dir() {
-  echo "${_DF_PATHS[app_cfgs]}"
-}
-
 df_dotfile_dir() {
   key=$1
 
@@ -48,3 +44,8 @@ df_dfinstall_path() {
 
   echo "$dir/df_install"
 }
+
+DF_APPINSTALL_DIR="${_DF_PATHS[app_insts]}"
+DF_CFGINSTALL_DIR="${_DF_PATHS[app_cfgs]}"
+DF_APP_INSTALLER="${_DF_PATHS[app_insts]}/df_install"
+DF_CFG_INSTALLER="${_DF_PATHS[app_cfgs]}/df_install"

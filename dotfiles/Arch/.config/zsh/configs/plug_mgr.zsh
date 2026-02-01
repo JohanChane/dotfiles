@@ -8,3 +8,7 @@ if [[ ! ${zsh_plugins}.zsh -nt ${zsh_plugins}.txt ]]; then
   )
 fi
 source ${zsh_plugins}.zsh
+
+# ## fast-syntax-highlighting
+#export TERM=xterm-256color
+zle_highlight=('paste:none')

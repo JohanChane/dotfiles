@@ -1,5 +1,7 @@
+#romkatv/powerlevel10k
+sindresorhus/pure
+
 zdharma-continuum/fast-syntax-highlighting kind:defer
 zsh-users/zsh-autosuggestions kind:defer
 Aloxaf/fzf-tab kind:defer
-romkatv/powerlevel10k
 ajeetdsouza/zoxide kind:defer

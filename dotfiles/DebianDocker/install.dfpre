@@ -3,29 +3,36 @@ install_default() {
 
   install_basic_utils
   install_vim
-  install_bash
+  install_zsh
   install_fzf
   install_zoxide
   install_cpp_dev
   
   echo "Please run below commands:"
-  echo 'source ~/.bashrc; hash -r'
+  echo 'zsh'
+  #echo 'source ~/.zshrc; hash -r'
 }
 
 install_prepare() {
-  if df_is_root; then
-    apt update
-    apt install sudo
-  else
-    sudo apt update
-    sudo apt install sudo
-  fi
-  
+  install_apt_sources
+
+  $(df_sudo) apt update
+  $(df_sudo) apt install sudo
+
   sudo apt install -y curl git 7zip
 
   # 设置时区
-  sudo ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
-  sudo dpkg-reconfigure -f noninteractive tzdata
+  #sudo ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+  #sudo dpkg-reconfigure -f noninteractive tzdata
+}
+
+install_apt_sources() {
+  os_name=$(df_detect_os)
+  if [ "$os_name" == "debian13" ]; then
+    $(df_sudo) cp -f "$DF_CFGINSTALL_DIR/apt/debian13.sources" /etc/apt/sources.list.d/debian.sources
+  elif [ "$os_name" == "debian12" ]; then
+    $(df_sudo) cp -f "$DF_CFGINSTALL_DIR/apt/debian12.sources" /etc/apt/sources.list.d/debian.sources
+  fi
 }
 
 install_basic_utils() {
@@ -33,68 +40,53 @@ install_basic_utils() {
   sudo apt install -y vim net-tools
 }
 
-install_bash() {
-  installer=$(df_dfinstall_path "$(df_app_cfg_dir)")
-  "$installer" cfg_bash
+install_zsh() {
+  sudo apt install -y zsh
+  "$DF_CFG_INSTALLER" cfg_zsh
+
+  "$DF_APP_INSTALLER" pkg_antidote
+  "$DF_CFG_INSTALLER" cfg_antidote
+
+  "$DF_CFG_INSTALLER" cfg_zsh_theme
 }
 
 install_vim() {
-  installer=$(df_dfinstall_path "$(df_app_install_dir)")
-  "$installer" pkg_vim
-
-  installer=$(df_dfinstall_path "$(df_app_cfg_dir)")
-  "$installer" cfg_vim
+  "$DF_APP_INSTALLER" pkg_vim
+  "$DF_CFG_INSTALLER" cfg_vim
 }
 
 install_neovim() {
-  installer=$(df_dfinstall_path "$(df_app_install_dir)")
-  "$installer" pkg_neovim
-
-  installer=$(df_dfinstall_path "$(df_app_cfg_dir)")
-  "$installer" cfg_neovim_lazyvim
+  "$DF_APP_INSTALLER" pkg_neovim
+  "$DF_CFG_INSTALLER" cfg_neovim_lazyvim
 }
 
 install_fzf() {
-  installer=$(df_dfinstall_path "$(df_app_install_dir)")
-  "$installer" pkg_fzf
-
-  installer=$(df_dfinstall_path "$(df_app_cfg_dir)")
-  "$installer" cfg_fzf_bash
+  "$DF_APP_INSTALLER" pkg_fzf
+  "$DF_CFG_INSTALLER" cfg_fzf_zsh
 }
 
 install_zoxide() {
   sudo apt install -y zoxide
-
-  installer=$(df_dfinstall_path "$(df_app_cfg_dir)")
-  "$installer" cfg_zoxide_bash
+  "$DF_CFG_INSTALLER" cfg_zoxide_zsh
 }
 
 install_asdf() {
-  installer=$(df_dfinstall_path "$(df_app_install_dir)")
-  "$installer" pkg_asdf
-
-  installer=$(df_dfinstall_path "$(df_app_cfg_dir)")
-  "$installer" cfg_asdf_bash
+  "$DF_APP_INSTALLER" pkg_asdf
+  "$DF_CFG_INSTALLER" cfg_asdf_zsh
 }
 
 install_lazygit() {
-  installer=$(df_dfinstall_path "$(df_app_install_dir)")
-  "$installer" pkg_lazygit
+  "$DF_APP_INSTALLER" pkg_lazygit
 }
 
 install_yazi() {
-  installer=$(df_dfinstall_path "$(df_app_install_dir)")
-  "$installer" pkg_yazi
-  
-  installer=$(df_dfinstall_path "$(df_app_cfg_dir)")
-  "$installer" cfg_yazi_bash
+  "$DF_APP_INSTALLER" pkg_yazi
+  "$DF_CFG_INSTALLER" cfg_yazi_zsh
 }
 
 install_tmux() {
   sudo apt install -y tmux
-
-  installer=$(df_dfinstall_path "$(df_app_cfg_dir)")
-  "$installer" cfg_tmux_bash
+  "$DF_CFG_INSTALLER" cfg_tmux_zsh
 }
 
 install_cpp_dev() {

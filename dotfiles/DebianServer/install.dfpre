@@ -24,53 +24,63 @@ install_prepare() {
   sudo apt install -y curl git 7zip
 }
 
-_install_debian_docker_helper() {
-  $install_pos=$1
-
-  installer=$(df_dfinstall_path "$(df_dotfile_dir debian_docker_df)")
-  "$installer" $1
+install_apt_sources() {
+  os_name=$(df_detect_os)
+  if [ "$os_name" == "debian13" ]; then
+    $(df_sudo) cp -f "$DF_CFGINSTALL_DIR/apt/debian13.sources" /etc/apt/sources.list.d/debian.sources
+  elif [ "$os_name" == "debian12" ]; then
+    $(df_sudo) cp -f "$DF_CFGINSTALL_DIR/apt/debian12.sources" /etc/apt/sources.list.d/debian.sources
+  fi
 }
 
 install_basic_utils() {
-  _install_debian_docker_helper basic_utils
+  sudo apt install -y jq bat fd-find ripgrep
+  sudo apt install -y vim net-tools
 }
 
 install_bash() {
-  _install_debian_docker_helper bash
+  "$DF_CFG_INSTALLER" cfg_bash
 }
 
 install_vim() {
-  _install_debian_docker_helper vim
+  "$DF_APP_INSTALLER" pkg_vim
+  "$DF_CFG_INSTALLER" cfg_vim
 }
 
 install_neovim() {
-  _install_debian_docker_helper neovim
+  "$DF_APP_INSTALLER" pkg_neovim
+  "$DF_CFG_INSTALLER" cfg_neovim_lazyvim
 }
 
 install_fzf() {
-  _install_debian_docker_helper fzf
+  "$DF_APP_INSTALLER" pkg_fzf
+  "$DF_CFG_INSTALLER" cfg_fzf_bash
 }
 
 install_zoxide() {
-  _install_debian_docker_helper zoxide
+  sudo apt install -y zoxide
+  "$DF_CFG_INSTALLER" cfg_zoxide_bash
 }
 
 install_asdf() {
-  _install_debian_docker_helper asdf
+  "$DF_APP_INSTALLER" pkg_asdf
+  "$DF_CFG_INSTALLER" cfg_asdf_bash
 }
 
 install_lazygit() {
-  _install_debian_docker_helper lazygit
+  "$DF_APP_INSTALLER" pkg_lazygit
 }
 
 install_yazi() {
-  _install_debian_docker_helper yazi
+  "$DF_APP_INSTALLER" pkg_yazi
+  "$DF_CFG_INSTALLER" cfg_yazi_bash
 }
 
 install_tmux() {
-  _install_debian_docker_helper tmux
+  sudo apt install -y tmux
+  "$DF_CFG_INSTALLER" cfg_tmux_bash
 }
 
 install_cpp_dev() {
-  _install_debian_docker_helper cpp_dev
+  sudo apt install -y gdb clangd
 }
