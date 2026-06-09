@@ -90,5 +90,5 @@ install_tmux() {
 }
 
 install_cpp_dev() {
-  sudo apt install -y gdb clangd
+  sudo apt install -y gdb clangd clang-format
 }
